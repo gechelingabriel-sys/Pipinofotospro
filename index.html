@@ -1,44 +1,218 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0d10"><meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#090b0e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pipino Pro">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Pipino Pro v2</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0d10;--card:#141820;--line:#28303b;--text:#f4f7fb;--muted:#96a0ad;--accent:#4da3ff;--ok:#46d17d;--warn:#ffbc4b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}.wrap{max-width:760px;margin:auto;padding:calc(env(safe-area-inset-top) + 20px) 14px calc(env(safe-area-inset-bottom) + 30px)}header{display:flex;gap:12px;align-items:center;margin-bottom:16px}.logo{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:#151b23;border:1px solid var(--line);font-size:24px}h1{margin:0;font-size:26px}.sub,.small{color:var(--muted);font-size:12px;line-height:1.5}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}.hero h2{margin:0 0 6px}.hero p{margin:0 0 15px;color:var(--muted);line-height:1.45}button,.btn{appearance:none;border:0;min-height:48px;border-radius:14px;padding:0 15px;font:inherit;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}.primary{width:100%;background:var(--accent);color:#07121e}.secondary{background:#202630;color:var(--text);border:1px solid #313a46}.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.45}#picker{display:none}.pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.pill{font-size:12px;padding:6px 9px;background:#0f1319;border:1px solid var(--line);border-radius:999px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.control{font-size:13px;color:#ccd5df}.control select,.control input{width:100%;margin-top:7px}.control select{height:44px;border-radius:12px;border:1px solid var(--line);background:#0f1319;color:var(--text);padding:0 10px}input[type=range]{accent-color:var(--accent)}.line{display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--line);padding:11px 0}.line:first-of-type{border-top:0}.notice{padding:11px;border-radius:12px;background:#101820;border:1px solid #26384d;color:#c4d1df;font-size:12px;line-height:1.5}.warn{margin-top:9px;background:#1b1710;border-color:#493820;color:#e8d2a8}.files{display:grid;gap:10px;margin-top:12px}.file{display:grid;grid-template-columns:70px 1fr;gap:11px;padding:10px;border:1px solid var(--line);border-radius:15px;background:#10141a}.thumb{width:70px;height:70px;object-fit:cover;border-radius:11px;background:#080b0e}.fname{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta,.status{font-size:12px;color:var(--muted);line-height:1.45;margin-top:4px}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.actions button{min-height:40px;font-size:12px;flex:1 1 105px}.progress{height:7px;border-radius:999px;background:#0d1116;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:width .2s}@media(max-width:540px){.grid{grid-template-columns:1fr}}
+:root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
+.wrap{max-width:760px;margin:auto;padding:calc(env(safe-area-inset-top) + 18px) 12px calc(env(safe-area-inset-bottom) + 34px)}
+header{display:flex;gap:12px;align-items:center;margin-bottom:15px}.logo{width:46px;height:46px;border:1px solid var(--line);border-radius:14px;background:#151b22;display:grid;place-items:center;font-size:23px}
+h1{font-size:26px;margin:0;letter-spacing:-.03em}.sub{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:13px;box-shadow:0 12px 34px rgba(0,0,0,.18)}
+.hero h2{font-size:21px;margin:0 0 6px}.hero p{margin:0 0 15px;color:var(--muted);line-height:1.45}
+button,.btn{appearance:none;border:0;border-radius:14px;min-height:48px;padding:0 15px;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.primary{width:100%;background:var(--accent);color:#06111d}.secondary{background:#202731;color:var(--text);border:1px solid #323c49}.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button:disabled{opacity:.42}input[type=file]{display:none}
+.pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.pill{font-size:12px;padding:7px 9px;border-radius:999px;background:#0d1116;border:1px solid var(--line);color:#cbd4de}
+.title{font-size:15px;margin:0 0 11px}select{width:100%;height:49px;border:1px solid var(--line);border-radius:13px;background:#0d1116;color:var(--text);font:inherit;padding:0 12px}
+.setting{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-top:10px}.setting strong{font-size:13px;display:block}.setting span{font-size:12px;line-height:1.45;color:var(--muted);display:block;margin-top:3px}
+.notice{font-size:12px;line-height:1.48;padding:10px 11px;border-radius:12px;background:#101820;border:1px solid #26384d;color:#c7d4e3;margin-top:10px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.files{display:grid;gap:10px;margin-top:12px}
+.file{display:grid;grid-template-columns:72px 1fr;gap:11px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:var(--card2)}
+.thumb{width:72px;height:72px;border-radius:11px;object-fit:cover;background:#05070a}.fname{font-size:14px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta,.small{font-size:12px;line-height:1.45;color:var(--muted);margin-top:4px}.status{font-size:12px;margin-top:4px}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.actions button{min-height:40px;font-size:12px;flex:1 1 110px}
+.progress{height:7px;border-radius:999px;background:#080b0e;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:width .18s}
+footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}
+.modal-card{width:min(96vw,440px);background:#11151a;border:1px solid var(--line);border-radius:22px;padding:15px}
+.editor{position:relative;width:min(84vw,370px);aspect-ratio:1;margin:11px auto 13px;background:#000;border-radius:16px;overflow:hidden;touch-action:none}
+#editCanvas{display:block;width:100%;height:100%}.circle{position:absolute;inset:5%;border:2px solid rgba(255,255,255,.94);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}.safe{position:absolute;inset:15%;border:1px dashed rgba(77,163,255,.95);border-radius:50%;pointer-events:none}
+.zoomrow{display:grid;grid-template-columns:42px 1fr 50px;gap:8px;align-items:center;font-size:12px;color:var(--muted)}input[type=range]{width:100%;accent-color:var(--accent)}
+.modalbuttons{display:flex;gap:8px;margin-top:13px}.modalbuttons button{flex:1}
 </style>
 </head>
-<body><div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">Resolución, color y privacidad fotográfica</div></div></header>
-<section class="card hero"><h2>Selecciona fotos del iPhone</h2><p>Procesamiento local en Safari. Sin cuenta, sin registro y sin subir tus fotos a una base de datos.</p><label for="picker" class="btn primary">Seleccionar fotos</label><input id="picker" type="file" accept="image/*,.heic,.heif" multiple><div class="pills"><span class="pill">12 MP</span><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Display P3</span><span class="pill">JPEG / PNG</span></div></section>
-<section class="card"><div class="grid">
-<label class="control">Resolución<select id="preset"><option value="24" selected>24 MP · 5712×4284</option><option value="48">48 MP · 8064×6048</option><option value="12">12 MP · 4032×3024</option></select></label>
-<label class="control">Formato<select id="format"><option value="image/jpeg" selected>JPEG</option><option value="image/png">PNG</option></select></label>
-<label class="control">Encuadre<select id="fit"><option value="crop" selected>4:3 exacto · recorte centrado</option><option value="contain">Foto completa · bandas si hace falta</option></select></label>
-<label class="control">Calidad JPEG · <span id="qv">95</span><input id="quality" type="range" min="70" max="100" value="95"></label></div>
-<div class="line"><div><strong>Display P3</strong><div class="small">Amplia gama de color cuando Safari/WebKit la soporte.</div></div><input id="p3" type="checkbox" checked></div>
-<div id="support" class="notice"></div><div class="notice warn">Iguala dimensiones de salida y puede exportar en Display P3. No reproduce Photonic Engine, Deep Fusion o Smart HDR, ni añade EXIF falso de cámara.</div></section>
-<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><strong>Fotos</strong><button id="all" class="secondary" disabled>Procesar todas</button></div><div class="progress"><div id="bar" class="bar"></div></div><div id="files" class="files"></div></section>
-<section class="card"><strong>Informe técnico</strong><p class="small">Incluye dimensiones, tamaño, SHA-256, formato y espacio de color solicitado antes/después.</p><button id="report" class="ghost" disabled>Descargar JSON</button></section>
-<div class="small">HEIC puede seleccionarse si Safari lo decodifica. La app no ofrece exportación HEIC porque el navegador no garantiza un codificador HEIC verificable. La recodificación elimina EXIF sensible como GPS, fecha y modelo de cámara.</div>
+<body>
+<div class="wrap">
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v2 · calidad automática por destino</div></div></header>
+
+<section class="card hero">
+<h2>Selecciona tus fotos</h2>
+<p>Procesamiento local en el iPhone. Sin registro, sin servidor y sin franjas negras.</p>
+<label class="btn primary" for="picker">Seleccionar fotos</label>
+<input id="picker" type="file" accept="image/*,.heic,.heif" multiple>
+<div class="pills"><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Perfil Plus</span><span class="pill">Color automático</span></div>
+</section>
+
+<section class="card">
+<h3 class="title">Destino</h3>
+<select id="preset">
+<option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
+<option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
+<option value="profile">Instagram · Perfil Plus · 1080×1080</option>
+<option value="post">Instagram · Post vertical · 1080×1350</option>
+<option value="story">Instagram · Story / Reel · 1080×1920</option>
+</select>
+<div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
+<div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
+<div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
+<div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
+<div id="p3Info" class="notice"></div>
+</section>
+
+<section class="card">
+<div class="top"><h3 class="title" style="margin:0">Fotos</h3><button id="all" class="secondary" disabled>Procesar todas</button></div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<div id="files" class="files"></div>
+</section>
+
+<section class="card">
+<h3 class="title">Informe técnico</h3>
+<div class="small">Dimensiones, peso, SHA-256, color solicitado y validación de cada salida.</div>
+<div class="actions"><button id="report" class="ghost" disabled>Descargar JSON</button></div>
+</section>
+
+<footer>Pipino Pro ajusta resolución, color, recorte y compresión. No añade EXIF falsos de cámara y no certifica que una imagen haya sido capturada por un iPhone.</footer>
 </div>
+
+<div id="modal" class="modal">
+<div class="modal-card">
+<div class="top"><strong>Instagram Perfil Plus</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
+<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra lo que Instagram verá; el azul es la zona segura para la cara.</div>
+<div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
+<div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
+<div class="modalbuttons"><button id="reset" class="secondary">Centrar</button><button id="use" class="primary">Usar encuadre</button></div>
+</div>
+</div>
+
 <script>
-const $=s=>document.querySelector(s),items=[],reports=[];const picker=$('#picker'),files=$('#files'),all=$('#all'),bar=$('#bar'),report=$('#report'),preset=$('#preset'),format=$('#format'),fit=$('#fit'),quality=$('#quality'),p3=$('#p3');
-const PRE={12:{l:[4032,3024],p:[3024,4032]},24:{l:[5712,4284],p:[4284,5712]},48:{l:[8064,6048],p:[6048,8064]}};
-quality.oninput=()=>$('#qv').textContent=quality.value;
-function p3ok(){try{let c=document.createElement('canvas'),x=c.getContext('2d',{colorSpace:'display-p3'});if(!x)return false;let a=x.getContextAttributes?x.getContextAttributes():null;return a?a.colorSpace==='display-p3':true}catch{return false}}const P3=p3ok();$('#support').innerHTML=P3?'✅ Safari confirma canvas <b>Display P3</b>.':'⚠️ El navegador no confirma Display P3. Se usará <b>sRGB</b>.';
-function bytes(n){let u=['B','KB','MB','GB'],i=0,v=n;while(v>=1024&&i<3){v/=1024;i++}return v.toFixed(i?2:0)+' '+u[i]}
-async function hash(b){let d=await crypto.subtle.digest('SHA-256',await b.arrayBuffer());return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function load(f){return new Promise((res,rej)=>{let u=URL.createObjectURL(f),im=new Image;im.onload=()=>res({im,u});im.onerror=()=>{URL.revokeObjectURL(u);rej(Error('Safari no pudo decodificar este archivo.'))};im.src=u})}
-function crop(ctx,im,w,h){let sr=im.naturalWidth/im.naturalHeight,tr=w/h,sx=0,sy=0,sw=im.naturalWidth,sh=im.naturalHeight;if(sr>tr){sw=im.naturalHeight*tr;sx=(im.naturalWidth-sw)/2}else{sh=im.naturalWidth/tr;sy=(im.naturalHeight-sh)/2}ctx.drawImage(im,sx,sy,sw,sh,0,0,w,h)}
-function contain(ctx,im,w,h){let s=Math.min(w/im.naturalWidth,h/im.naturalHeight),dw=im.naturalWidth*s,dh=im.naturalHeight*s,dx=(w-dw)/2,dy=(h-dh)/2;ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);ctx.drawImage(im,dx,dy,dw,dh)}
-function blob(c,m,q){return new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(Error('No se pudo codificar.')),m,q))}
-function dl(b,n){let a=document.createElement('a'),u=URL.createObjectURL(b);a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-async function process(it){it.s.textContent='Procesando…';it.s.className='status warn';let {im,u}=await load(it.f),bh=await hash(it.f),ori=im.naturalHeight>im.naturalWidth?'p':'l',[w,h]=PRE[preset.value][ori],c=document.createElement('canvas');c.width=w;c.height=h;let cs=(p3.checked&&P3)?'display-p3':'srgb',ctx;try{ctx=c.getContext('2d',{colorSpace:cs,alpha:false})}catch{cs='srgb';ctx=c.getContext('2d',{alpha:false})}fit.value==='crop'?crop(ctx,im,w,h):contain(ctx,im,w,h);let out=await blob(c,format.value,Number(quality.value)/100),ah=await hash(out),ext=format.value==='image/png'?'png':'jpg',name=it.f.name.replace(/\.[^.]+$/,'')+'_pipino_'+preset.value+'MP.'+ext;it.out=out;it.name=name;it.m.textContent=`${im.naturalWidth}×${im.naturalHeight} · ${bytes(it.f.size)} → ${w}×${h} · ${bytes(out.size)} · ${cs.toUpperCase()}`;it.s.textContent='✅ Listo';it.s.className='status ok';it.d.disabled=it.sh.disabled=false;let r={input_name:it.f.name,input_type:it.f.type,input_bytes:it.f.size,input_dimensions:[im.naturalWidth,im.naturalHeight],sha256_before:bh,output_name:name,output_type:format.value,output_bytes:out.size,output_dimensions:[w,h],sha256_after:ah,resolution_preset:preset.value+' MP',requested_color_space:cs,jpeg_quality:format.value==='image/jpeg'?Number(quality.value):null,metadata_mode:'sanitize-by-reencode',camera_metadata_added:false,c2pa_status:'no_comprobado_en_navegador',validation_status:'blob_generado'};let i=reports.findIndex(x=>x.input_name===it.f.name);i>=0?reports[i]=r:reports.push(r);report.disabled=false;URL.revokeObjectURL(u)}
-function card(f){let e=document.createElement('div');e.className='file';e.innerHTML='<img class="thumb"><div><div class="fname"></div><div class="meta"></div><div class="status"></div><div class="actions"><button class="secondary one">Procesar</button><button class="ghost d" disabled>Descargar</button><button class="ghost sh" disabled>Compartir</button></div></div>';let it={f,e,t:e.querySelector('.thumb'),m:e.querySelector('.meta'),s:e.querySelector('.status'),d:e.querySelector('.d'),sh:e.querySelector('.sh')};e.querySelector('.fname').textContent=f.name;it.m.textContent=(f.type||'tipo no indicado')+' · '+bytes(f.size);let u=URL.createObjectURL(f);it.t.src=u;it.t.onload=()=>URL.revokeObjectURL(u);e.querySelector('.one').onclick=()=>process(it).catch(x=>{it.s.textContent=x.message;it.s.className='status'});it.d.onclick=()=>it.out&&dl(it.out,it.name);it.sh.onclick=async()=>{if(!it.out)return;let F=new File([it.out],it.name,{type:it.out.type});if(navigator.canShare&&navigator.canShare({files:[F]})){try{await navigator.share({files:[F],title:'Pipino Pro'})}catch{}}else dl(it.out,it.name)};return it}
-picker.onchange=()=>{files.innerHTML='';items.length=0;reports.length=0;report.disabled=true;bar.style.width='0';[...picker.files].forEach(f=>{let i=card(f);items.push(i);files.appendChild(i.e)});all.disabled=!items.length};
-all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await process(items[i])}catch(e){items[i].s.textContent=e.message}bar.style.width=Math.round((i+1)/items.length*100)+'%'}all.disabled=false};
-report.onclick=()=>dl(new Blob([JSON.stringify({app:'Pipino Pro Standalone',generated_at:new Date().toISOString(),browser:navigator.userAgent,results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+const $=s=>document.querySelector(s);
+const PRESETS={
+ iphone24:{name:'iPhone 17 Pro · 24 MP',l:[5712,4284],p:[4284,5712],ratio:'4:3',q:.98,color:'p3',sharp:0},
+ iphone48:{name:'iPhone 17 Pro · 48 MP',l:[8064,6048],p:[6048,8064],ratio:'4:3',q:.98,color:'p3',sharp:0},
+ profile:{name:'Instagram · Perfil Plus',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.95,color:'srgb',sharp:.10},
+ post:{name:'Instagram · Post vertical',l:[1080,1350],p:[1080,1350],ratio:'4:5',q:.94,color:'srgb',sharp:.07},
+ story:{name:'Instagram · Story / Reel',l:[1080,1920],p:[1080,1920],ratio:'9:16',q:.94,color:'srgb',sharp:.05}
+};
+const picker=$('#picker'), preset=$('#preset'), filesEl=$('#files'), all=$('#all'), reportBtn=$('#report'), bar=$('#bar');
+const items=[], reports=[];
+function p3ok(){try{const c=document.createElement('canvas');const x=c.getContext('2d',{colorSpace:'display-p3'});if(!x)return false;const a=x.getContextAttributes?.();return a?a.colorSpace==='display-p3':true}catch{return false}}
+const P3=p3ok();
+function current(){return PRESETS[preset.value]}
+function updateInfo(){
+ const p=current();
+ $('#resInfo').textContent=`${p.l[0]}×${p.l[1]} en horizontal · ${p.ratio} · relleno total sin bandas.`;
+ $('#colorInfo').textContent=p.color==='srgb'?'sRGB, elegido automáticamente para Instagram.':(P3?'Display P3, elegido automáticamente por Safari.':'sRGB automático porque este Safari no confirma Display P3.');
+ $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · enfoque suave posterior al escalado.':' · archivo de alta calidad.'}`;
+ $('#p3Info').innerHTML=P3?'✅ Este Safari confirma canvas Display P3.':'ℹ️ Display P3 no está confirmado aquí; Pipino usará sRGB automáticamente.';
+}
+preset.addEventListener('change',updateInfo);updateInfo();
+
+function fmt(n){const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(i?2:0)} ${u[i]}`}
+async function hash(blob){const b=await blob.arrayBuffer(),d=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function load(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>ok({im,u});im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('Safari no pudo abrir esta imagen.'))};im.src=u})}
+function cover(ctx,im,w,h,crop=null){
+ if(crop){
+   const base=Math.max(w/im.naturalWidth,h/im.naturalHeight);
+   const s=base*crop.zoom;
+   const dw=im.naturalWidth*s,dh=im.naturalHeight*s;
+   const dx=(w-dw)/2+crop.x*w,dy=(h-dh)/2+crop.y*h;
+   ctx.drawImage(im,dx,dy,dw,dh);return;
+ }
+ const sr=im.naturalWidth/im.naturalHeight,tr=w/h;let sx=0,sy=0,sw=im.naturalWidth,sh=im.naturalHeight;
+ if(sr>tr){sw=sh*tr;sx=(im.naturalWidth-sw)/2}else{sh=sw/tr;sy=(im.naturalHeight-sh)/2}
+ ctx.drawImage(im,sx,sy,sw,sh,0,0,w,h);
+}
+function sharpen(canvas,amount){
+ if(!amount)return;
+ const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+ const img=c.getImageData(0,0,w,h),src=img.data,out=new Uint8ClampedArray(src);
+ const a=amount;
+ for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+   const i=(y*w+x)*4,il=i-4,ir=i+4,iu=i-w*4,id=i+w*4;
+   for(let k=0;k<3;k++)out[i+k]=Math.max(0,Math.min(255,src[i+k]*(1+4*a)-a*(src[il+k]+src[ir+k]+src[iu+k]+src[id+k])));
+ }
+ img.data.set(out);c.putImageData(img,0,0);
+}
+function blobFrom(c,q){return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo generar JPEG.')),'image/jpeg',q))}
+function outName(f,key){return `${f.name.replace(/\.[^.]+$/,'')}_pipino_${key}.jpg`}
+function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+async function savePhotos(blob,name){
+ const f=new File([blob],name,{type:'image/jpeg',lastModified:Date.now()});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){
+   try{await navigator.share({files:[f],title:'Guardar en Fotos'});return}catch(e){if(e.name==='AbortError')return}
+ }
+ download(blob,name);
+ alert('Safari no permite acceso directo a Fotos en este contexto. El archivo se descargó; puedes guardarlo desde el visor.');
+}
+
+async function processItem(it){
+ it.status.textContent='Procesando…';it.status.className='status warn';
+ const p=current(),{im,u}=await load(it.file);
+ const portrait=im.naturalHeight>im.naturalWidth,[w,h]=portrait?p.p:p.l;
+ let cs=p.color==='p3'&&P3?'display-p3':'srgb',c=document.createElement('canvas');c.width=w;c.height=h;
+ let ctx;try{ctx=c.getContext('2d',{colorSpace:cs,alpha:false})}catch{cs='srgb';ctx=c.getContext('2d',{alpha:false})}
+ if(!ctx)throw new Error('No se pudo crear el lienzo.');
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ const crop=(preset.value==='profile'&&it.crop)?it.crop:null;
+ cover(ctx,im,w,h,crop);
+ if(p.sharp)sharpen(c,p.sharp);
+ const out=await blobFrom(c,p.q),name=outName(it.file,preset.value);
+ if(it.outUrl)URL.revokeObjectURL(it.outUrl);
+ it.out=out;it.name=name;it.outUrl=URL.createObjectURL(out);it.save.disabled=false;it.dl.disabled=false;
+ it.meta.textContent=`${im.naturalWidth}×${im.naturalHeight} · ${fmt(it.file.size)} → ${w}×${h} · ${fmt(out.size)}`;
+ it.status.textContent=`✅ ${p.name} · ${cs==='display-p3'?'Display P3':'sRGB'} · sin bandas`;
+ it.status.className='status ok';
+ const rep={input_name:it.file.name,input_bytes:it.file.size,input_dimensions:[im.naturalWidth,im.naturalHeight],sha256_before:await hash(it.file),output_name:name,output_bytes:out.size,output_dimensions:[w,h],sha256_after:await hash(out),preset:p.name,color_space_requested:cs,jpeg_quality:Math.round(p.q*100),crop_mode:'cover-no-bands',camera_metadata_added:false,c2pa_status:'no_comprobado_en_navegador',validation_status:out.size>0?'blob_generado':'error'};
+ const n=reports.findIndex(x=>x.input_name===it.file.name);if(n>=0)reports[n]=rep;else reports.push(rep);
+ reportBtn.disabled=false;URL.revokeObjectURL(u);
+}
+
+function card(file){
+ const el=document.createElement('div');el.className='file';el.innerHTML=`<img class="thumb"><div><div class="fname"></div><div class="meta"></div><div class="status"></div><div class="actions"><button class="secondary edit">Encuadre</button><button class="secondary run">Procesar</button><button class="primary save" disabled>Guardar en Fotos</button><button class="ghost dl" disabled>Descargar</button></div></div>`;
+ const it={file,el,thumb:el.querySelector('.thumb'),fname:el.querySelector('.fname'),meta:el.querySelector('.meta'),status:el.querySelector('.status'),save:el.querySelector('.save'),dl:el.querySelector('.dl'),crop:{zoom:1,x:0,y:0},out:null,name:null,outUrl:null};
+ it.fname.textContent=file.name;it.meta.textContent=`${file.type||'imagen'} · ${fmt(file.size)}`;
+ const u=URL.createObjectURL(file);it.thumb.src=u;it.thumb.onload=()=>URL.revokeObjectURL(u);it.thumb.onerror=()=>URL.revokeObjectURL(u);
+ el.querySelector('.run').onclick=()=>processItem(it).catch(e=>{it.status.textContent='❌ '+e.message;it.status.className='status bad'});
+ el.querySelector('.edit').onclick=()=>openEditor(it);
+ it.save.onclick=()=>it.out&&savePhotos(it.out,it.name);
+ it.dl.onclick=()=>it.out&&download(it.out,it.name);
+ return it;
+}
+
+picker.onchange=()=>{items.splice(0);reports.splice(0);filesEl.innerHTML='';bar.style.width='0';reportBtn.disabled=true;[...picker.files].forEach(f=>{const it=card(f);items.push(it);filesEl.appendChild(it.el)});all.disabled=!items.length};
+all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i])}catch(e){items[i].status.textContent='❌ '+e.message;items[i].status.className='status bad'}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(r=>setTimeout(r,20))}all.disabled=false};
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v2',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+
+const modal=$('#modal'),editCanvas=$('#editCanvas'),ectx=editCanvas.getContext('2d'),zoom=$('#zoom'),zv=$('#zv');
+let active=null,eimg=null,eurl=null,drag=false,lastX=0,lastY=0;
+function renderEditor(){
+ if(!eimg||!active)return;const w=editCanvas.width,h=editCanvas.height,c=active.crop;
+ ectx.fillStyle='#000';ectx.fillRect(0,0,w,h);
+ const base=Math.max(w/eimg.naturalWidth,h/eimg.naturalHeight),s=base*c.zoom,dw=eimg.naturalWidth*s,dh=eimg.naturalHeight*s;
+ ectx.drawImage(eimg,(w-dw)/2+c.x*w,(h-dh)/2+c.y*h,dw,dh);zv.textContent=c.zoom.toFixed(2)+'×';
+}
+async function openEditor(it){
+ if(preset.value!=='profile'){alert('El editor circular está disponible en Instagram Perfil Plus. Cambia el destino a Perfil Plus para usarlo.');return}
+ active=it;const x=await load(it.file);eimg=x.im;eurl=x.u;zoom.value=it.crop.zoom;modal.classList.add('show');renderEditor();
+}
+function closeEditor(){modal.classList.remove('show');if(eurl)URL.revokeObjectURL(eurl);eurl=null;eimg=null;active=null}
+$('#close').onclick=closeEditor;$('#use').onclick=closeEditor;$('#reset').onclick=()=>{if(active){active.crop={zoom:1,x:0,y:0};zoom.value=1;renderEditor()}};
+zoom.oninput=()=>{if(active){active.crop.zoom=Number(zoom.value);renderEditor()}};
+function pos(ev){const r=editCanvas.getBoundingClientRect(),t=ev.touches?.[0]||ev;return{x:t.clientX-r.left,y:t.clientY-r.top}}
+function start(ev){if(!active)return;drag=true;const p=pos(ev);lastX=p.x;lastY=p.y;ev.preventDefault()}
+function move(ev){if(!drag||!active)return;const p=pos(ev),r=editCanvas.getBoundingClientRect();active.crop.x+=(p.x-lastX)/r.width;active.crop.y+=(p.y-lastY)/r.height;lastX=p.x;lastY=p.y;renderEditor();ev.preventDefault()}
+function end(){drag=false}
+editCanvas.addEventListener('touchstart',start,{passive:false});editCanvas.addEventListener('touchmove',move,{passive:false});editCanvas.addEventListener('touchend',end);
+editCanvas.addEventListener('mousedown',start);window.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script></body></html>
+</script>
+</body></html>
