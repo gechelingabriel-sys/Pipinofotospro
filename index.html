@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v3</title>
+<title>Pipino Pro v4</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -41,7 +41,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v3 · Perfil Plus HQ + calidad automática</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v4 · Perfil Plus 1080 + vista 320</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
@@ -56,15 +56,14 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <select id="preset">
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
-<option value="profileHQ">Instagram · Perfil Plus HQ · 320×320</option>
-<option value="profileMaster">Instagram · Perfil Plus Master · 1080×1080</option>
+<option value="profile">Instagram · Perfil Plus · 1080×1080</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
 </select>
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice" id="profileNote">Perfil Plus HQ prepara 320×320 para reducir la recompressión/redimensionado de Instagram. Al ampliar mucho una foto de perfil seguirá existiendo un límite porque Instagram sirve un avatar pequeño.</div><div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
+<div class="notice" id="profileNote">Para Instagram Perfil Plus, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La referencia 320×320 se usa solo para comprobar cómo puede verse el avatar reducido; no se exporta como archivo final.</div><div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
 <div id="p3Info" class="notice"></div>
 </section>
 
@@ -86,9 +85,16 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <div id="modal" class="modal">
 <div class="modal-card">
 <div class="top"><strong>Instagram Perfil Plus</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
-<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura para la cara. Perfil Plus HQ genera 320×320 optimizado y Master genera 1080×1080.</div>
+<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura para la cara. La salida final será 1080×1080. La referencia 320×320 sirve únicamente para comprobar el aspecto del avatar reducido.</div>
 <div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
 <div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
+<div style="margin-top:12px">
+  <button id="preview320" class="ghost" style="width:100%">Vista previa 320×320</button>
+  <div id="avatarPreviewWrap" style="display:none;margin-top:10px;text-align:center">
+    <canvas id="avatarPreview" width="320" height="320" style="width:160px;height:160px;border-radius:50%;border:1px solid #29313c"></canvas>
+    <div class="small">Referencia visual del avatar reducido. No se descarga.</div>
+  </div>
+</div>
 <div class="modalbuttons"><button id="reset" class="secondary">Centrar</button><button id="use" class="primary">Usar encuadre</button></div>
 </div>
 </div>
@@ -98,8 +104,7 @@ const $=s=>document.querySelector(s);
 const PRESETS={
  iphone24:{name:'iPhone 17 Pro · 24 MP',l:[5712,4284],p:[4284,5712],ratio:'4:3',q:.98,color:'p3',sharp:0},
  iphone48:{name:'iPhone 17 Pro · 48 MP',l:[8064,6048],p:[6048,8064],ratio:'4:3',q:.98,color:'p3',sharp:0},
- profileHQ:{name:'Instagram · Perfil Plus HQ',l:[320,320],p:[320,320],ratio:'1:1',q:.96,color:'srgb',sharp:.16,multistep:true},
- profileMaster:{name:'Instagram · Perfil Plus Master',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.95,color:'srgb',sharp:.08,multistep:true},
+ profile:{name:'Instagram · Perfil Plus',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.96,color:'srgb',sharp:.08,multistep:true},
  post:{name:'Instagram · Post vertical',l:[1080,1350],p:[1080,1350],ratio:'4:5',q:.94,color:'srgb',sharp:.07},
  story:{name:'Instagram · Story / Reel',l:[1080,1920],p:[1080,1920],ratio:'9:16',q:.94,color:'srgb',sharp:.05}
 };
@@ -112,7 +117,7 @@ function updateInfo(){
  const p=current();
  $('#resInfo').textContent=`${p.l[0]}×${p.l[1]} en horizontal · ${p.ratio} · relleno total sin bandas.`;
  $('#colorInfo').textContent=p.color==='srgb'?'sRGB, elegido automáticamente para Instagram.':(P3?'Display P3, elegido automáticamente por Safari.':'sRGB automático porque este Safari no confirma Display P3.');
- $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · reducción multietapa + microenfoque final.':' · archivo de alta calidad.'}`;
+ $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · reducción multietapa + microenfoque suave.':' · archivo de alta calidad.'}`;
  $('#p3Info').innerHTML=P3?'✅ Este Safari confirma canvas Display P3.':'ℹ️ Display P3 no está confirmado aquí; Pipino usará sRGB automáticamente.';
 }
 preset.addEventListener('change',updateInfo);updateInfo();
@@ -206,9 +211,9 @@ async function processItem(it){
  const p=current(),{im,u}=await load(it.file);
  const portrait=im.naturalHeight>im.naturalWidth,[w,h]=portrait?p.p:p.l;
  let cs=p.color==='p3'&&P3?'display-p3':'srgb';
- const crop=(['profileHQ','profileMaster'].includes(preset.value)&&it.crop)?it.crop:null;
+ const crop=(preset.value==='profile'&&it.crop)?it.crop:null;
  let c;
- if(['profileHQ','profileMaster'].includes(preset.value)){
+ if(preset.value==='profile'){
    c=renderHighQuality(im,w,h,crop,!!p.multistep);
  }else{
    c=document.createElement('canvas');c.width=w;c.height=h;
@@ -243,7 +248,7 @@ function card(file){
 
 picker.onchange=()=>{items.splice(0);reports.splice(0);filesEl.innerHTML='';bar.style.width='0';reportBtn.disabled=true;[...picker.files].forEach(f=>{const it=card(f);items.push(it);filesEl.appendChild(it.el)});all.disabled=!items.length};
 all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i])}catch(e){items[i].status.textContent='❌ '+e.message;items[i].status.className='status bad'}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(r=>setTimeout(r,20))}all.disabled=false};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v3',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v4',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
 
 const modal=$('#modal'),editCanvas=$('#editCanvas'),ectx=editCanvas.getContext('2d'),zoom=$('#zoom'),zv=$('#zv');
 let active=null,eimg=null,eurl=null,drag=false,lastX=0,lastY=0;
@@ -253,16 +258,29 @@ function renderEditor(){
  const base=Math.max(w/eimg.naturalWidth,h/eimg.naturalHeight),s=base*c.zoom,dw=eimg.naturalWidth*s,dh=eimg.naturalHeight*s;
  ectx.drawImage(eimg,(w-dw)/2+c.x*w,(h-dh)/2+c.y*h,dw,dh);zv.textContent=c.zoom.toFixed(2)+'×';
 }
+
+function renderAvatarPreview(){
+ if(!eimg||!active)return;
+ const pCanvas=$('#avatarPreview');
+ const pctx=pCanvas.getContext('2d',{alpha:false});
+ pctx.clearRect(0,0,320,320);
+ pctx.imageSmoothingEnabled=true;
+ pctx.imageSmoothingQuality='high';
+ cover(pctx,eimg,320,320,active.crop);
+ $('#avatarPreviewWrap').style.display='block';
+}
+$('#preview320').onclick=renderAvatarPreview;
+
 async function openEditor(it){
- if(!['profileHQ','profileMaster'].includes(preset.value)){alert('El editor circular está disponible en Instagram Perfil Plus HQ y Perfil Plus Master.');return}
- active=it;const x=await load(it.file);eimg=x.im;eurl=x.u;zoom.value=it.crop.zoom;modal.classList.add('show');renderEditor();
+ if(preset.value!=='profile'){alert('El editor circular está disponible en Instagram Perfil Plus. Cambia el destino a Perfil Plus para usarlo.');return}
+ active=it;const x=await load(it.file);eimg=x.im;eurl=x.u;zoom.value=it.crop.zoom;$('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
 }
 function closeEditor(){modal.classList.remove('show');if(eurl)URL.revokeObjectURL(eurl);eurl=null;eimg=null;active=null}
-$('#close').onclick=closeEditor;$('#use').onclick=closeEditor;$('#reset').onclick=()=>{if(active){active.crop={zoom:1,x:0,y:0};zoom.value=1;renderEditor()}};
-zoom.oninput=()=>{if(active){active.crop.zoom=Number(zoom.value);renderEditor()}};
+$('#close').onclick=closeEditor;$('#use').onclick=closeEditor;$('#reset').onclick=()=>{if(active){active.crop={zoom:1,x:0,y:0};zoom.value=1;renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview()}};
+zoom.oninput=()=>{if(active){active.crop.zoom=Number(zoom.value);renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview()}};
 function pos(ev){const r=editCanvas.getBoundingClientRect(),t=ev.touches?.[0]||ev;return{x:t.clientX-r.left,y:t.clientY-r.top}}
 function start(ev){if(!active)return;drag=true;const p=pos(ev);lastX=p.x;lastY=p.y;ev.preventDefault()}
-function move(ev){if(!drag||!active)return;const p=pos(ev),r=editCanvas.getBoundingClientRect();active.crop.x+=(p.x-lastX)/r.width;active.crop.y+=(p.y-lastY)/r.height;lastX=p.x;lastY=p.y;renderEditor();ev.preventDefault()}
+function move(ev){if(!drag||!active)return;const p=pos(ev),r=editCanvas.getBoundingClientRect();active.crop.x+=(p.x-lastX)/r.width;active.crop.y+=(p.y-lastY)/r.height;lastX=p.x;lastY=p.y;renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview();ev.preventDefault()}
 function end(){drag=false}
 editCanvas.addEventListener('touchstart',start,{passive:false});editCanvas.addEventListener('touchmove',move,{passive:false});editCanvas.addEventListener('touchend',end);
 editCanvas.addEventListener('mousedown',start);window.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
