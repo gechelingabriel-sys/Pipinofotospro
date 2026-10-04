@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v2</title>
+<title>Pipino Pro v3</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -41,7 +41,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v2 · calidad automática por destino</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v3 · Perfil Plus HQ + calidad automática</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
@@ -56,14 +56,15 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <select id="preset">
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
-<option value="profile">Instagram · Perfil Plus · 1080×1080</option>
+<option value="profileHQ">Instagram · Perfil Plus HQ · 320×320</option>
+<option value="profileMaster">Instagram · Perfil Plus Master · 1080×1080</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
 </select>
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
+<div class="notice" id="profileNote">Perfil Plus HQ prepara 320×320 para reducir la recompressión/redimensionado de Instagram. Al ampliar mucho una foto de perfil seguirá existiendo un límite porque Instagram sirve un avatar pequeño.</div><div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
 <div id="p3Info" class="notice"></div>
 </section>
 
@@ -85,7 +86,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <div id="modal" class="modal">
 <div class="modal-card">
 <div class="top"><strong>Instagram Perfil Plus</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
-<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra lo que Instagram verá; el azul es la zona segura para la cara.</div>
+<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura para la cara. Perfil Plus HQ genera 320×320 optimizado y Master genera 1080×1080.</div>
 <div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
 <div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
 <div class="modalbuttons"><button id="reset" class="secondary">Centrar</button><button id="use" class="primary">Usar encuadre</button></div>
@@ -97,7 +98,8 @@ const $=s=>document.querySelector(s);
 const PRESETS={
  iphone24:{name:'iPhone 17 Pro · 24 MP',l:[5712,4284],p:[4284,5712],ratio:'4:3',q:.98,color:'p3',sharp:0},
  iphone48:{name:'iPhone 17 Pro · 48 MP',l:[8064,6048],p:[6048,8064],ratio:'4:3',q:.98,color:'p3',sharp:0},
- profile:{name:'Instagram · Perfil Plus',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.95,color:'srgb',sharp:.10},
+ profileHQ:{name:'Instagram · Perfil Plus HQ',l:[320,320],p:[320,320],ratio:'1:1',q:.96,color:'srgb',sharp:.16,multistep:true},
+ profileMaster:{name:'Instagram · Perfil Plus Master',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.95,color:'srgb',sharp:.08,multistep:true},
  post:{name:'Instagram · Post vertical',l:[1080,1350],p:[1080,1350],ratio:'4:5',q:.94,color:'srgb',sharp:.07},
  story:{name:'Instagram · Story / Reel',l:[1080,1920],p:[1080,1920],ratio:'9:16',q:.94,color:'srgb',sharp:.05}
 };
@@ -110,7 +112,7 @@ function updateInfo(){
  const p=current();
  $('#resInfo').textContent=`${p.l[0]}×${p.l[1]} en horizontal · ${p.ratio} · relleno total sin bandas.`;
  $('#colorInfo').textContent=p.color==='srgb'?'sRGB, elegido automáticamente para Instagram.':(P3?'Display P3, elegido automáticamente por Safari.':'sRGB automático porque este Safari no confirma Display P3.');
- $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · enfoque suave posterior al escalado.':' · archivo de alta calidad.'}`;
+ $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · reducción multietapa + microenfoque final.':' · archivo de alta calidad.'}`;
  $('#p3Info').innerHTML=P3?'✅ Este Safari confirma canvas Display P3.':'ℹ️ Display P3 no está confirmado aquí; Pipino usará sRGB automáticamente.';
 }
 preset.addEventListener('change',updateInfo);updateInfo();
@@ -130,6 +132,52 @@ function cover(ctx,im,w,h,crop=null){
  if(sr>tr){sw=sh*tr;sx=(im.naturalWidth-sw)/2}else{sh=sw/tr;sy=(im.naturalHeight-sh)/2}
  ctx.drawImage(im,sx,sy,sw,sh,0,0,w,h);
 }
+
+function renderHighQuality(im,w,h,crop,multistep){
+  // Render first to a larger working canvas, then downsample in stages.
+  // This avoids asking the browser to jump directly from a very large image to 320 px.
+  let targetW=w,targetH=h;
+  let startW=Math.max(targetW,Math.min(im.naturalWidth, targetW*4));
+  let startH=Math.max(targetH,Math.min(im.naturalHeight, targetH*4));
+
+  // Keep target aspect ratio.
+  const tr=targetW/targetH;
+  if(startW/startH>tr) startW=Math.round(startH*tr);
+  else startH=Math.round(startW/tr);
+
+  const first=document.createElement('canvas');
+  first.width=startW; first.height=startH;
+  const fctx=first.getContext('2d',{alpha:false});
+  fctx.imageSmoothingEnabled=true;
+  fctx.imageSmoothingQuality='high';
+  cover(fctx,im,startW,startH,crop);
+
+  if(!multistep || (startW===targetW && startH===targetH)) return first;
+
+  let current=first;
+  while(current.width/2>targetW && current.height/2>targetH){
+    const next=document.createElement('canvas');
+    next.width=Math.max(targetW,Math.round(current.width/2));
+    next.height=Math.max(targetH,Math.round(current.height/2));
+    const nctx=next.getContext('2d',{alpha:false});
+    nctx.imageSmoothingEnabled=true;
+    nctx.imageSmoothingQuality='high';
+    nctx.drawImage(current,0,0,current.width,current.height,0,0,next.width,next.height);
+    current=next;
+  }
+
+  if(current.width!==targetW || current.height!==targetH){
+    const last=document.createElement('canvas');
+    last.width=targetW; last.height=targetH;
+    const lctx=last.getContext('2d',{alpha:false});
+    lctx.imageSmoothingEnabled=true;
+    lctx.imageSmoothingQuality='high';
+    lctx.drawImage(current,0,0,current.width,current.height,0,0,targetW,targetH);
+    current=last;
+  }
+  return current;
+}
+
 function sharpen(canvas,amount){
  if(!amount)return;
  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
@@ -157,12 +205,18 @@ async function processItem(it){
  it.status.textContent='Procesando…';it.status.className='status warn';
  const p=current(),{im,u}=await load(it.file);
  const portrait=im.naturalHeight>im.naturalWidth,[w,h]=portrait?p.p:p.l;
- let cs=p.color==='p3'&&P3?'display-p3':'srgb',c=document.createElement('canvas');c.width=w;c.height=h;
- let ctx;try{ctx=c.getContext('2d',{colorSpace:cs,alpha:false})}catch{cs='srgb';ctx=c.getContext('2d',{alpha:false})}
- if(!ctx)throw new Error('No se pudo crear el lienzo.');
- ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
- const crop=(preset.value==='profile'&&it.crop)?it.crop:null;
- cover(ctx,im,w,h,crop);
+ let cs=p.color==='p3'&&P3?'display-p3':'srgb';
+ const crop=(['profileHQ','profileMaster'].includes(preset.value)&&it.crop)?it.crop:null;
+ let c;
+ if(['profileHQ','profileMaster'].includes(preset.value)){
+   c=renderHighQuality(im,w,h,crop,!!p.multistep);
+ }else{
+   c=document.createElement('canvas');c.width=w;c.height=h;
+   let ctx;try{ctx=c.getContext('2d',{colorSpace:cs,alpha:false})}catch{cs='srgb';ctx=c.getContext('2d',{alpha:false})}
+   if(!ctx)throw new Error('No se pudo crear el lienzo.');
+   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+   cover(ctx,im,w,h,crop);
+ }
  if(p.sharp)sharpen(c,p.sharp);
  const out=await blobFrom(c,p.q),name=outName(it.file,preset.value);
  if(it.outUrl)URL.revokeObjectURL(it.outUrl);
@@ -189,7 +243,7 @@ function card(file){
 
 picker.onchange=()=>{items.splice(0);reports.splice(0);filesEl.innerHTML='';bar.style.width='0';reportBtn.disabled=true;[...picker.files].forEach(f=>{const it=card(f);items.push(it);filesEl.appendChild(it.el)});all.disabled=!items.length};
 all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i])}catch(e){items[i].status.textContent='❌ '+e.message;items[i].status.className='status bad'}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(r=>setTimeout(r,20))}all.disabled=false};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v2',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v3',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
 
 const modal=$('#modal'),editCanvas=$('#editCanvas'),ectx=editCanvas.getContext('2d'),zoom=$('#zoom'),zv=$('#zv');
 let active=null,eimg=null,eurl=null,drag=false,lastX=0,lastY=0;
@@ -200,7 +254,7 @@ function renderEditor(){
  ectx.drawImage(eimg,(w-dw)/2+c.x*w,(h-dh)/2+c.y*h,dw,dh);zv.textContent=c.zoom.toFixed(2)+'×';
 }
 async function openEditor(it){
- if(preset.value!=='profile'){alert('El editor circular está disponible en Instagram Perfil Plus. Cambia el destino a Perfil Plus para usarlo.');return}
+ if(!['profileHQ','profileMaster'].includes(preset.value)){alert('El editor circular está disponible en Instagram Perfil Plus HQ y Perfil Plus Master.');return}
  active=it;const x=await load(it.file);eimg=x.im;eurl=x.u;zoom.value=it.crop.zoom;modal.classList.add('show');renderEditor();
 }
 function closeEditor(){modal.classList.remove('show');if(eurl)URL.revokeObjectURL(eurl);eurl=null;eimg=null;active=null}
