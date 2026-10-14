@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090b0e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v4</title>
+<title>Pipino Pro v5</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -31,7 +31,7 @@ button:disabled{opacity:.42}input[type=file]{display:none}
 .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.actions button{min-height:40px;font-size:12px;flex:1 1 110px}
 .progress{height:7px;border-radius:999px;background:#080b0e;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:var(--accent);transition:width .18s}
 footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
-.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:14px}.modal.show{display:flex;align-items:flex-start;overflow-y:auto;overscroll-behavior:contain;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom))}
 .modal-card{width:min(96vw,440px);background:#11151a;border:1px solid var(--line);border-radius:22px;padding:15px}
 .editor{position:relative;width:min(84vw,370px);aspect-ratio:1;margin:11px auto 13px;background:#000;border-radius:16px;overflow:hidden;touch-action:none}
 #editCanvas{display:block;width:100%;height:100%}.circle{position:absolute;inset:5%;border:2px solid rgba(255,255,255,.94);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}.safe{position:absolute;inset:15%;border:1px dashed rgba(77,163,255,.95);border-radius:50%;pointer-events:none}
@@ -41,7 +41,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v4 · Perfil Plus 1080 + vista 320</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v5 · Archivo 24/48 MP + Instagram</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
@@ -53,7 +53,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 
 <section class="card">
 <h3 class="title">Destino</h3>
-<select id="preset">
+<select id="preset" aria-label="Seleccionar destino">
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
 <option value="profile">Instagram · Perfil Plus · 1080×1080</option>
@@ -63,8 +63,9 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice" id="profileNote">Para Instagram Perfil Plus, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La referencia 320×320 se usa solo para comprobar cómo puede verse el avatar reducido; no se exporta como archivo final.</div><div class="notice">La imagen siempre ocupa todo el fotograma. Si sobra imagen por la relación de aspecto, se recorta proporcionalmente. <strong>Nunca se añaden líneas negras.</strong></div>
+<div class="notice" id="profileNote">Para Instagram Perfil Plus, Pipino exporta 1080×1080 en sRGB y JPEG 96 %. La vista 320×320 es únicamente una simulación del avatar. Instagram controla el tamaño que muestra a otras personas y puede reducir la nitidez al ampliar.</div><div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
 <div id="p3Info" class="notice"></div>
+<div class="notice">Al exportar se crea un JPEG nuevo. Este proceso puede descartar EXIF y credenciales de procedencia, que esta versión no puede verificar. Conserva siempre el original. La aplicación no inventa datos de cámara.</div>
 </section>
 
 <section class="card">
@@ -100,191 +101,222 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </div>
 
 <script>
-const $=s=>document.querySelector(s);
-const PRESETS={
- iphone24:{name:'iPhone 17 Pro · 24 MP',l:[5712,4284],p:[4284,5712],ratio:'4:3',q:.98,color:'p3',sharp:0},
- iphone48:{name:'iPhone 17 Pro · 48 MP',l:[8064,6048],p:[6048,8064],ratio:'4:3',q:.98,color:'p3',sharp:0},
- profile:{name:'Instagram · Perfil Plus',l:[1080,1080],p:[1080,1080],ratio:'1:1',q:.96,color:'srgb',sharp:.08,multistep:true},
- post:{name:'Instagram · Post vertical',l:[1080,1350],p:[1080,1350],ratio:'4:5',q:.94,color:'srgb',sharp:.07},
- story:{name:'Instagram · Story / Reel',l:[1080,1920],p:[1080,1920],ratio:'9:16',q:.94,color:'srgb',sharp:.05}
-};
+const $ = selector => document.querySelector(selector);
+const PRESETS = Object.freeze({
+  iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, color:'p3', sharp:0, type:'archive'},
+  iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, color:'p3', sharp:0, type:'archive'},
+  profile:  {name:'Instagram · Perfil Plus', landscape:[1080,1080], portrait:[1080,1080], q:0.96, color:'srgb', sharp:0.075, type:'social'},
+  post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, color:'srgb', sharp:0.055, type:'social'},
+  story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, color:'srgb', sharp:0.04, type:'social'}
+});
 const picker=$('#picker'), preset=$('#preset'), filesEl=$('#files'), all=$('#all'), reportBtn=$('#report'), bar=$('#bar');
-const items=[], reports=[];
-function p3ok(){try{const c=document.createElement('canvas');const x=c.getContext('2d',{colorSpace:'display-p3'});if(!x)return false;const a=x.getContextAttributes?.();return a?a.colorSpace==='display-p3':true}catch{return false}}
-const P3=p3ok();
-function current(){return PRESETS[preset.value]}
-function updateInfo(){
- const p=current();
- $('#resInfo').textContent=`${p.l[0]}×${p.l[1]} en horizontal · ${p.ratio} · relleno total sin bandas.`;
- $('#colorInfo').textContent=p.color==='srgb'?'sRGB, elegido automáticamente para Instagram.':(P3?'Display P3, elegido automáticamente por Safari.':'sRGB automático porque este Safari no confirma Display P3.');
- $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)}%${p.sharp?' · reducción multietapa + microenfoque suave.':' · archivo de alta calidad.'}`;
- $('#p3Info').innerHTML=P3?'✅ Este Safari confirma canvas Display P3.':'ℹ️ Display P3 no está confirmado aquí; Pipino usará sRGB automáticamente.';
+let items=[], reports=[];
+function availableP3(){
+ try {
+  const c=document.createElement('canvas');
+  const ctx=c.getContext('2d',{colorSpace:'display-p3'});
+  const colorSpace=ctx?.getContextAttributes?.()?.colorSpace;
+  c.width=0;c.height=0;
+  return colorSpace==='display-p3';
+ } catch{return false;}
 }
-preset.addEventListener('change',updateInfo);updateInfo();
-
-function fmt(n){const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(i?2:0)} ${u[i]}`}
-async function hash(blob){const b=await blob.arrayBuffer(),d=await crypto.subtle.digest('SHA-256',b);return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function load(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>ok({im,u});im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('Safari no pudo abrir esta imagen.'))};im.src=u})}
-function cover(ctx,im,w,h,crop=null){
- if(crop){
-   const base=Math.max(w/im.naturalWidth,h/im.naturalHeight);
-   const s=base*crop.zoom;
-   const dw=im.naturalWidth*s,dh=im.naturalHeight*s;
-   const dx=(w-dw)/2+crop.x*w,dy=(h-dh)/2+crop.y*h;
-   ctx.drawImage(im,dx,dy,dw,dh);return;
+const P3=availableP3();
+function current(){return PRESETS[preset.value] || PRESETS.iphone24;}
+function info(){
+ const p=current(),wh=p.landscape;
+ $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.type==='archive'?'4:3':'tamaño Instagram'} · recorte completo sin franjas`;
+ $('#colorInfo').textContent=p.color==='srgb'?'sRGB automático para Instagram.':(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
+ $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y enfoque final discreto.':' · sin enfoque artificial.'}`;
+ $('#p3Info').textContent=P3?'Display P3 disponible en el lienzo. El perfil final puede depender del navegador.':'Display P3 no verificado; se utilizará sRGB.';
+ $('#profileNote').style.display=preset.value==='profile'?'block':'none';
+ for(const it of items){ if(it.out){ it.status.textContent='Cambió el destino: vuelve a procesar esta foto.'; it.status.className='status warn'; it.save.disabled=true;it.dl.disabled=true;it.out=null;} }
+}
+preset.addEventListener('change',info);
+function fmt(n){const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(i?2:0)} ${u[i]}`;}
+function decode(file){return new Promise((resolve,reject)=>{
+ const url=URL.createObjectURL(file),image=new Image();
+ image.onload=()=>resolve({image,url});
+ image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Safari no pudo decodificar esta imagen. Para HEIC, prueba compartirla desde Fotos como JPEG.'));};
+ image.src=url;
+});}
+async function digest(blob){
+ try{const data=await blob.arrayBuffer(), hash=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+ catch{return null;}
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function safeCrop(image,w,h,crop){
+ const base=Math.max(w/image.naturalWidth,h/image.naturalHeight);
+ const zoom=Math.max(1,Number(crop?.zoom)||1),dw=image.naturalWidth*base*zoom,dh=image.naturalHeight*base*zoom;
+ const maxX=Math.max(0,(dw-w)/(2*w)),maxY=Math.max(0,(dh-h)/(2*h));
+ const x=clamp(Number(crop?.x)||0,-maxX,maxX),y=clamp(Number(crop?.y)||0,-maxY,maxY);
+ if(crop){crop.x=x;crop.y=y;crop.zoom=zoom;}
+ return {dw,dh,dx:(w-dw)/2+x*w,dy:(h-dh)/2+y*h};
+}
+function drawCover(ctx,image,w,h,crop=null){
+ const {dx,dy,dw,dh}=safeCrop(image,w,h,crop);
+ ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+ ctx.drawImage(image,dx,dy,dw,dh);
+}
+function makeCanvas(w,h,color){
+ const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+ let ctx,chosen=color;
+ try{ctx=canvas.getContext('2d',{alpha:false,colorSpace:color});}
+ catch{chosen='srgb';ctx=canvas.getContext('2d',{alpha:false,colorSpace:'srgb'});}
+ if(!ctx){canvas.width=0;canvas.height=0;throw Error('No se pudo crear el lienzo del navegador.');}
+ if(ctx.getContextAttributes?.()?.colorSpace!=='display-p3')chosen='srgb';
+ return {canvas,ctx,chosen};
+}
+function renderSocial(image,w,h,crop){
+ // Work in sRGB end to end and reduce in bounded steps. Maximum working canvas 2160px on longest side.
+ const ratio=Math.min(2, Math.max(1,image.naturalWidth/w,image.naturalHeight/h));
+ const scale=ratio>1.15?2:1;
+ let cw=w*scale,ch=h*scale;
+ let {canvas,ctx}=makeCanvas(cw,ch,'srgb');
+ drawCover(ctx,image,cw,ch,crop);
+ if(scale===2){
+   const lower=makeCanvas(w,h,'srgb');
+   lower.ctx.imageSmoothingEnabled=true;lower.ctx.imageSmoothingQuality='high';
+   lower.ctx.drawImage(canvas,0,0,w,h);
+   canvas.width=0;canvas.height=0;canvas=lower.canvas;
  }
- const sr=im.naturalWidth/im.naturalHeight,tr=w/h;let sx=0,sy=0,sw=im.naturalWidth,sh=im.naturalHeight;
- if(sr>tr){sw=sh*tr;sx=(im.naturalWidth-sw)/2}else{sh=sw/tr;sy=(im.naturalHeight-sh)/2}
- ctx.drawImage(im,sx,sy,sw,sh,0,0,w,h);
+ return canvas;
 }
-
-function renderHighQuality(im,w,h,crop,multistep){
-  // Render first to a larger working canvas, then downsample in stages.
-  // This avoids asking the browser to jump directly from a very large image to 320 px.
-  let targetW=w,targetH=h;
-  let startW=Math.max(targetW,Math.min(im.naturalWidth, targetW*4));
-  let startH=Math.max(targetH,Math.min(im.naturalHeight, targetH*4));
-
-  // Keep target aspect ratio.
-  const tr=targetW/targetH;
-  if(startW/startH>tr) startW=Math.round(startH*tr);
-  else startH=Math.round(startW/tr);
-
-  const first=document.createElement('canvas');
-  first.width=startW; first.height=startH;
-  const fctx=first.getContext('2d',{alpha:false});
-  fctx.imageSmoothingEnabled=true;
-  fctx.imageSmoothingQuality='high';
-  cover(fctx,im,startW,startH,crop);
-
-  if(!multistep || (startW===targetW && startH===targetH)) return first;
-
-  let current=first;
-  while(current.width/2>targetW && current.height/2>targetH){
-    const next=document.createElement('canvas');
-    next.width=Math.max(targetW,Math.round(current.width/2));
-    next.height=Math.max(targetH,Math.round(current.height/2));
-    const nctx=next.getContext('2d',{alpha:false});
-    nctx.imageSmoothingEnabled=true;
-    nctx.imageSmoothingQuality='high';
-    nctx.drawImage(current,0,0,current.width,current.height,0,0,next.width,next.height);
-    current=next;
-  }
-
-  if(current.width!==targetW || current.height!==targetH){
-    const last=document.createElement('canvas');
-    last.width=targetW; last.height=targetH;
-    const lctx=last.getContext('2d',{alpha:false});
-    lctx.imageSmoothingEnabled=true;
-    lctx.imageSmoothingQuality='high';
-    lctx.drawImage(current,0,0,current.width,current.height,0,0,targetW,targetH);
-    current=last;
-  }
-  return current;
-}
-
-function sharpen(canvas,amount){
+function microSharpen(canvas,amount){
  if(!amount)return;
- const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
- const img=c.getImageData(0,0,w,h),src=img.data,out=new Uint8ClampedArray(src);
- const a=amount;
+ const w=canvas.width,h=canvas.height;
+ // Only operate on Instagram-sized images, never allocate full-size 48MP ImageData.
+ if(w*h>2500000)return;
+ const ctx=canvas.getContext('2d',{colorSpace:'srgb',willReadFrequently:true});
+ const frame=ctx.getImageData(0,0,w,h),src=frame.data;
+ const copy=new Uint8ClampedArray(src);
  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
-   const i=(y*w+x)*4,il=i-4,ir=i+4,iu=i-w*4,id=i+w*4;
-   for(let k=0;k<3;k++)out[i+k]=Math.max(0,Math.min(255,src[i+k]*(1+4*a)-a*(src[il+k]+src[ir+k]+src[iu+k]+src[id+k])));
+   const i=(y*w+x)*4;
+   for(let k=0;k<3;k++){
+     const adj=src[i-4+k]+src[i+4+k]+src[i-4*w+k]+src[i+4*w+k];
+     copy[i+k]=clamp(src[i+k]*(1+4*amount)-amount*adj,0,255);
+   }
  }
- img.data.set(out);c.putImageData(img,0,0);
+ frame.data.set(copy);ctx.putImageData(frame,0,0);
 }
-function blobFrom(c,q){return new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo generar JPEG.')),'image/jpeg',q))}
-function outName(f,key){return `${f.name.replace(/\.[^.]+$/,'')}_pipino_${key}.jpg`}
-function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-async function savePhotos(blob,name){
- const f=new File([blob],name,{type:'image/jpeg',lastModified:Date.now()});
- if(navigator.canShare&&navigator.canShare({files:[f]})){
-   try{await navigator.share({files:[f],title:'Guardar en Fotos'});return}catch(e){if(e.name==='AbortError')return}
+function jpegBlob(canvas,q){return new Promise((resolve,reject)=>canvas.toBlob(blob=>{
+ if(!blob || blob.size<100 || blob.type!=='image/jpeg')reject(new Error('El navegador no pudo crear un JPEG válido. Prueba un tamaño menor.'));
+ else resolve(blob);
+},'image/jpeg',q));}
+// Validate dimensions in JPEG SOF markers without fully decoding a second 48MP image.
+async function jpegDimensions(blob){
+ const bytes=new Uint8Array(await blob.slice(0,Math.min(blob.size,512*1024)).arrayBuffer());
+ if(bytes[0]!==0xff||bytes[1]!==0xd8)throw Error('La exportación no es un JPEG.');
+ let i=2;
+ while(i+8<bytes.length){
+  if(bytes[i]!==0xff){i++;continue;}
+  while(bytes[i]===0xff)i++;
+  const marker=bytes[i++];
+  if(marker===0xd9||marker===0xda)break;
+  if([0x01,0xd0,0xd1,0xd2,0xd3,0xd4,0xd5,0xd6,0xd7].includes(marker))continue;
+  if(i+2>bytes.length)break;
+  const length=bytes[i]*256+bytes[i+1];
+  if(length<2 || i+length>bytes.length)break;
+  if([0xc0,0xc1,0xc2,0xc3,0xc5,0xc6,0xc7,0xc9,0xca,0xcb,0xcd,0xce,0xcf].includes(marker))return {height:bytes[i+3]*256+bytes[i+4],width:bytes[i+5]*256+bytes[i+6]};
+  i+=length;
+ }
+ throw Error('No se pudieron comprobar las dimensiones del JPEG.');
+}
+function filename(file,key){return `${file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')}_pipino_${key}.jpg`;}
+function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
+async function shareOrDownload(blob,name){
+ // A website cannot write directly to the native iOS Photos library.
+ const file=new File([blob],name,{type:'image/jpeg'});
+ if(navigator.canShare?.({files:[file]})){
+  try{await navigator.share({files:[file]});return;}
+  catch(error){if(error?.name==='AbortError')return;}
  }
  download(blob,name);
- alert('Safari no permite acceso directo a Fotos en este contexto. El archivo se descargó; puedes guardarlo desde el visor.');
+ alert('Archivo descargado. Para guardarlo en Fotos, ábrelo y utiliza Compartir → Guardar imagen.');
 }
-
-async function processItem(it){
- it.status.textContent='Procesando…';it.status.className='status warn';
- const p=current(),{im,u}=await load(it.file);
- const portrait=im.naturalHeight>im.naturalWidth,[w,h]=portrait?p.p:p.l;
- let cs=p.color==='p3'&&P3?'display-p3':'srgb';
- const crop=(preset.value==='profile'&&it.crop)?it.crop:null;
- let c;
- if(preset.value==='profile'){
-   c=renderHighQuality(im,w,h,crop,!!p.multistep);
- }else{
-   c=document.createElement('canvas');c.width=w;c.height=h;
-   let ctx;try{ctx=c.getContext('2d',{colorSpace:cs,alpha:false})}catch{cs='srgb';ctx=c.getContext('2d',{alpha:false})}
-   if(!ctx)throw new Error('No se pudo crear el lienzo.');
-   ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
-   cover(ctx,im,w,h,crop);
- }
- if(p.sharp)sharpen(c,p.sharp);
- const out=await blobFrom(c,p.q),name=outName(it.file,preset.value);
- if(it.outUrl)URL.revokeObjectURL(it.outUrl);
- it.out=out;it.name=name;it.outUrl=URL.createObjectURL(out);it.save.disabled=false;it.dl.disabled=false;
- it.meta.textContent=`${im.naturalWidth}×${im.naturalHeight} · ${fmt(it.file.size)} → ${w}×${h} · ${fmt(out.size)}`;
- it.status.textContent=`✅ ${p.name} · ${cs==='display-p3'?'Display P3':'sRGB'} · sin bandas`;
- it.status.className='status ok';
- const rep={input_name:it.file.name,input_bytes:it.file.size,input_dimensions:[im.naturalWidth,im.naturalHeight],sha256_before:await hash(it.file),output_name:name,output_bytes:out.size,output_dimensions:[w,h],sha256_after:await hash(out),preset:p.name,color_space_requested:cs,jpeg_quality:Math.round(p.q*100),crop_mode:'cover-no-bands',camera_metadata_added:false,c2pa_status:'no_comprobado_en_navegador',validation_status:out.size>0?'blob_generado':'error'};
- const n=reports.findIndex(x=>x.input_name===it.file.name);if(n>=0)reports[n]=rep;else reports.push(rep);
- reportBtn.disabled=false;URL.revokeObjectURL(u);
+async function processItem(item){
+ item.status.textContent='Procesando…';item.status.className='status warn';
+ item.save.disabled=true;item.dl.disabled=true;
+ const p=current(), key=preset.value;
+ let source;
+ try{
+  source=await decode(item.file);
+  const image=source.image;
+  const square=p.type==='social';
+  const portrait=image.naturalHeight>image.naturalWidth;
+  const [w,h]=square?p.landscape:(portrait?p.portrait:p.landscape);
+  const color=p.color==='p3'&&P3?'display-p3':'srgb';
+  const crop=key==='profile'?item.crop:null;
+  const sourcePixels=image.naturalWidth*image.naturalHeight;
+  const pixels=w*h;
+  if(!sourcePixels)throw Error('Imagen original vacía.');
+  let canvas,chosen=color;
+  try{
+   if(p.type==='social')canvas=renderSocial(image,w,h,crop);
+   else{const x=makeCanvas(w,h,color);canvas=x.canvas;chosen=x.chosen;drawCover(x.ctx,image,w,h,null);}
+   if(p.type==='social')microSharpen(canvas,p.sharp);
+   const output=await jpegBlob(canvas,p.q);
+   const actual=await jpegDimensions(output);
+   if(actual.width!==w||actual.height!==h)throw Error(`Dimensiones inesperadas: ${actual.width}×${actual.height}.`);
+   const name=filename(item.file,key);
+   const oldUrl=item.outUrl;if(oldUrl)URL.revokeObjectURL(oldUrl);
+   item.out=output;item.outUrl=URL.createObjectURL(output);item.name=name;
+   item.save.disabled=false;item.dl.disabled=false;
+   const upscale=image.naturalWidth<w||image.naturalHeight<h;
+   item.meta.textContent=`${image.naturalWidth}×${image.naturalHeight} · ${fmt(item.file.size)} → ${w}×${h} · ${fmt(output.size)}`;
+   item.status.textContent=`Listo · ${chosen==='display-p3'?'Display P3':'sRGB'} · verificado${upscale?' · ampliado sin detalle adicional':''}`;
+   item.status.className=upscale?'status warn':'status ok';
+   const report={input_name:item.file.name,input_bytes:item.file.size,input_dimensions:[image.naturalWidth,image.naturalHeight],sha256_before:await digest(item.file),output_name:name,output_bytes:output.size,output_dimensions:[w,h],sha256_after:await digest(output),preset:p.name,format:'JPEG',jpeg_quality:Math.round(p.q*100),color_space_requested:chosen,icc_profile_verified:false,crop_mode:'cover-no-bars',upscaled:upscale,metadata_reencoded:true,c2pa_status:'not_checked',camera_metadata_added:false,validation_status:'jpeg_dimensions_verified',notes:upscale?'No se crea detalle nuevo al aumentar dimensiones.':null};
+   const n=reports.findIndex(r=>r.input_name===item.file.name);
+   if(n<0)reports.push(report); else reports[n]=report;
+   reportBtn.disabled=false;
+  }finally{if(canvas){canvas.width=0;canvas.height=0;}}
+ } catch(error){
+  item.status.textContent=`Error: ${error?.message||String(error)}. Para 48 MP, prueba 24 MP si Safari se queda sin memoria.`;
+  item.status.className='status bad';
+  throw error;
+ }finally{if(source?.url)URL.revokeObjectURL(source.url);}
 }
-
-function card(file){
- const el=document.createElement('div');el.className='file';el.innerHTML=`<img class="thumb"><div><div class="fname"></div><div class="meta"></div><div class="status"></div><div class="actions"><button class="secondary edit">Encuadre</button><button class="secondary run">Procesar</button><button class="primary save" disabled>Guardar en Fotos</button><button class="ghost dl" disabled>Descargar</button></div></div>`;
- const it={file,el,thumb:el.querySelector('.thumb'),fname:el.querySelector('.fname'),meta:el.querySelector('.meta'),status:el.querySelector('.status'),save:el.querySelector('.save'),dl:el.querySelector('.dl'),crop:{zoom:1,x:0,y:0},out:null,name:null,outUrl:null};
- it.fname.textContent=file.name;it.meta.textContent=`${file.type||'imagen'} · ${fmt(file.size)}`;
- const u=URL.createObjectURL(file);it.thumb.src=u;it.thumb.onload=()=>URL.revokeObjectURL(u);it.thumb.onerror=()=>URL.revokeObjectURL(u);
- el.querySelector('.run').onclick=()=>processItem(it).catch(e=>{it.status.textContent='❌ '+e.message;it.status.className='status bad'});
- el.querySelector('.edit').onclick=()=>openEditor(it);
- it.save.onclick=()=>it.out&&savePhotos(it.out,it.name);
- it.dl.onclick=()=>it.out&&download(it.out,it.name);
- return it;
+function makeCard(file){
+ const el=document.createElement('div');el.className='file';
+ el.innerHTML=`<img class="thumb" alt="Miniatura"><div><div class="fname"></div><div class="meta"></div><div class="status"></div><div class="actions"><button class="secondary edit">Encuadre</button><button class="secondary run">Procesar</button><button class="primary save" disabled>Compartir / Guardar en Fotos</button><button class="ghost dl" disabled>Descargar</button></div></div>`;
+ const item={file,el,thumb:el.querySelector('.thumb'),fname:el.querySelector('.fname'),meta:el.querySelector('.meta'),status:el.querySelector('.status'),save:el.querySelector('.save'),dl:el.querySelector('.dl'),crop:{zoom:1,x:0,y:0},out:null,name:null,outUrl:null};
+ item.fname.textContent=file.name;item.meta.textContent=`${file.type||'imagen'} · ${fmt(file.size)}`;
+ const url=URL.createObjectURL(file);item.thumb.src=url;item.thumb.onload=()=>URL.revokeObjectURL(url);item.thumb.onerror=()=>URL.revokeObjectURL(url);
+ el.querySelector('.run').onclick=()=>processItem(item).catch(()=>{});
+ el.querySelector('.edit').onclick=()=>openEditor(item).catch(e=>alert(e.message));
+ item.save.onclick=()=>item.out&&shareOrDownload(item.out,item.name);
+ item.dl.onclick=()=>item.out&&download(item.out,item.name);
+ return item;
 }
-
-picker.onchange=()=>{items.splice(0);reports.splice(0);filesEl.innerHTML='';bar.style.width='0';reportBtn.disabled=true;[...picker.files].forEach(f=>{const it=card(f);items.push(it);filesEl.appendChild(it.el)});all.disabled=!items.length};
-all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i])}catch(e){items[i].status.textContent='❌ '+e.message;items[i].status.className='status bad'}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(r=>setTimeout(r,20))}all.disabled=false};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v4',generated_at:new Date().toISOString(),results:reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
-
-const modal=$('#modal'),editCanvas=$('#editCanvas'),ectx=editCanvas.getContext('2d'),zoom=$('#zoom'),zv=$('#zv');
-let active=null,eimg=null,eurl=null,drag=false,lastX=0,lastY=0;
+function clearItems(){for(const it of items){if(it.outUrl)URL.revokeObjectURL(it.outUrl);}items=[];reports=[];filesEl.replaceChildren();}
+picker.onchange=()=>{clearItems();bar.style.width='0%';reportBtn.disabled=true;for(const file of picker.files){if(!file.type.startsWith('image/')&&!/\.(heic|heif)$/i.test(file.name))continue;const item=makeCard(file);items.push(item);filesEl.appendChild(item.el);}all.disabled=items.length===0;};
+all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i]);}catch{}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(resolve=>setTimeout(resolve,10));}all.disabled=false;};
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v5',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+const modal=$('#modal'), editCanvas=$('#editCanvas'), ectx=editCanvas.getContext('2d'), zoom=$('#zoom');
+let active=null,editable=null,dragging=false,lastX=0,lastY=0,originalCrop=null;
 function renderEditor(){
- if(!eimg||!active)return;const w=editCanvas.width,h=editCanvas.height,c=active.crop;
- ectx.fillStyle='#000';ectx.fillRect(0,0,w,h);
- const base=Math.max(w/eimg.naturalWidth,h/eimg.naturalHeight),s=base*c.zoom,dw=eimg.naturalWidth*s,dh=eimg.naturalHeight*s;
- ectx.drawImage(eimg,(w-dw)/2+c.x*w,(h-dh)/2+c.y*h,dw,dh);zv.textContent=c.zoom.toFixed(2)+'×';
+ if(!active||!editable)return;
+ ectx.clearRect(0,0,370,370);drawCover(ectx,editable.image,370,370,active.crop);
+ $('#zv').textContent=active.crop.zoom.toFixed(2)+'×';
+ if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview();
 }
-
-function renderAvatarPreview(){
- if(!eimg||!active)return;
- const pCanvas=$('#avatarPreview');
- const pctx=pCanvas.getContext('2d',{alpha:false});
- pctx.clearRect(0,0,320,320);
- pctx.imageSmoothingEnabled=true;
- pctx.imageSmoothingQuality='high';
- cover(pctx,eimg,320,320,active.crop);
- $('#avatarPreviewWrap').style.display='block';
-}
+function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);$('#avatarPreviewWrap').style.display='block';}
 $('#preview320').onclick=renderAvatarPreview;
-
-async function openEditor(it){
- if(preset.value!=='profile'){alert('El editor circular está disponible en Instagram Perfil Plus. Cambia el destino a Perfil Plus para usarlo.');return}
- active=it;const x=await load(it.file);eimg=x.im;eurl=x.u;zoom.value=it.crop.zoom;$('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
+async function openEditor(item){
+ if(preset.value!=='profile'){alert('Selecciona Instagram · Perfil Plus para editar el encuadre circular.');return;}
+ closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;$('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
 }
-function closeEditor(){modal.classList.remove('show');if(eurl)URL.revokeObjectURL(eurl);eurl=null;eimg=null;active=null}
-$('#close').onclick=closeEditor;$('#use').onclick=closeEditor;$('#reset').onclick=()=>{if(active){active.crop={zoom:1,x:0,y:0};zoom.value=1;renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview()}};
-zoom.oninput=()=>{if(active){active.crop.zoom=Number(zoom.value);renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview()}};
-function pos(ev){const r=editCanvas.getBoundingClientRect(),t=ev.touches?.[0]||ev;return{x:t.clientX-r.left,y:t.clientY-r.top}}
-function start(ev){if(!active)return;drag=true;const p=pos(ev);lastX=p.x;lastY=p.y;ev.preventDefault()}
-function move(ev){if(!drag||!active)return;const p=pos(ev),r=editCanvas.getBoundingClientRect();active.crop.x+=(p.x-lastX)/r.width;active.crop.y+=(p.y-lastY)/r.height;lastX=p.x;lastY=p.y;renderEditor();if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview();ev.preventDefault()}
-function end(){drag=false}
-editCanvas.addEventListener('touchstart',start,{passive:false});editCanvas.addEventListener('touchmove',move,{passive:false});editCanvas.addEventListener('touchend',end);
-editCanvas.addEventListener('mousedown',start);window.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+function closeEditor(){modal.classList.remove('show');if(editable?.url)URL.revokeObjectURL(editable.url);editable=null;active=null;originalCrop=null;dragging=false;}
+$('#close').onclick=()=>{if(active && originalCrop)active.crop={...originalCrop};closeEditor();};
+$('#use').onclick=()=>{if(active){active.out=null;active.save.disabled=true;active.dl.disabled=true;active.status.textContent='Encuadre actualizado. Procesa de nuevo para exportar.';active.status.className='status warn';}closeEditor();};
+$('#reset').onclick=()=>{if(active){active.crop={zoom:1,x:0,y:0};zoom.value='1';renderEditor();}};
+zoom.oninput=()=>{if(active){active.crop.zoom=Number(zoom.value);renderEditor();}};
+editCanvas.addEventListener('pointerdown',e=>{if(!active)return;dragging=true;lastX=e.clientX;lastY=e.clientY;editCanvas.setPointerCapture(e.pointerId);});
+editCanvas.addEventListener('pointermove',e=>{if(!dragging||!active)return;const rect=editCanvas.getBoundingClientRect();active.crop.x+=(e.clientX-lastX)/rect.width;active.crop.y+=(e.clientY-lastY)/rect.height;lastX=e.clientX;lastY=e.clientY;renderEditor();});
+editCanvas.addEventListener('pointerup',()=>dragging=false);
+editCanvas.addEventListener('pointercancel',()=>dragging=false);
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+info();
 
-if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body></html>
