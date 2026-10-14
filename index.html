@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v5</title>
+<title>Pipino Pro v6</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -41,7 +41,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v5 · Archivo 24/48 MP + Instagram</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v6 · Perfil Close Crop + vista ampliada</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
@@ -56,14 +56,14 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <select id="preset" aria-label="Seleccionar destino">
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
-<option value="profile">Instagram · Perfil Plus · 1080×1080</option>
+<option value="profile">Instagram · Perfil Close Crop · 1080×1080</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
 </select>
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice" id="profileNote">Para Instagram Perfil Plus, Pipino exporta 1080×1080 en sRGB y JPEG 96 %. La vista 320×320 es únicamente una simulación del avatar. Instagram controla el tamaño que muestra a otras personas y puede reducir la nitidez al ampliar.</div><div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
+<div class="notice" id="profileNote">Para Instagram Perfil Close Crop, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La cara debe ocupar aproximadamente el 70–80% del círculo visible, con menos aire lateral y menos pecho/fondo, para mejorar la definición percibida cuando Instagram reduce el avatar. La referencia 320×320 es solo de comprobación, no se exporta como archivo final.</div><div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
 <div id="p3Info" class="notice"></div>
 <div class="notice">Al exportar se crea un JPEG nuevo. Este proceso puede descartar EXIF y credenciales de procedencia, que esta versión no puede verificar. Conserva siempre el original. La aplicación no inventa datos de cámara.</div>
 </section>
@@ -85,8 +85,8 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 
 <div id="modal" class="modal">
 <div class="modal-card">
-<div class="top"><strong>Instagram Perfil Plus</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
-<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura para la cara. La salida final será 1080×1080. La referencia 320×320 sirve únicamente para comprobar el aspecto del avatar reducido.</div>
+<div class="top"><strong>Instagram Perfil Close Crop</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
+<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Para mejorar el perfil en Instagram, procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La salida final será 1080×1080. Esta herramienta está pensada para que la cara ocupe más área dentro del círculo, con menos fondo y menos torso. La referencia 320×320 sirve solo para comprobar cómo puede verse el avatar reducido.</div>
 <div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
 <div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
 <div style="margin-top:12px">
@@ -94,6 +94,8 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
   <div id="avatarPreviewWrap" style="display:none;margin-top:10px;text-align:center">
     <canvas id="avatarPreview" width="320" height="320" style="width:160px;height:160px;border-radius:50%;border:1px solid #29313c"></canvas>
     <div class="small">Referencia visual del avatar reducido. No se descarga.</div>
+    <canvas id="zoomPreview640" width="640" height="640" style="display:block;width:160px;height:160px;border-radius:50%;border:1px solid #29313c;margin:10px auto 0"></canvas>
+    <div class="small">Simulación ampliada del avatar reducido. Sirve solo como orientación visual.</div>
   </div>
 </div>
 <div class="modalbuttons"><button id="reset" class="secondary">Centrar</button><button id="use" class="primary">Usar encuadre</button></div>
@@ -300,7 +302,25 @@ function renderEditor(){
  $('#zv').textContent=active.crop.zoom.toFixed(2)+'×';
  if($('#avatarPreviewWrap').style.display==='block')renderAvatarPreview();
 }
-function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);$('#avatarPreviewWrap').style.display='block';}
+
+function renderZoomPreview640(){
+ if(!eimg||!active)return;
+ const pCanvas=$('#zoomPreview640');
+ const pctx=pCanvas.getContext('2d',{alpha:false});
+ pctx.clearRect(0,0,640,640);
+ pctx.imageSmoothingEnabled=true;
+ pctx.imageSmoothingQuality='high';
+ // Simulate enlarged viewing starting from a 320 avatar
+ const tmp=document.createElement('canvas');
+ tmp.width=320; tmp.height=320;
+ const tctx=tmp.getContext('2d',{alpha:false});
+ tctx.imageSmoothingEnabled=true;
+ tctx.imageSmoothingQuality='high';
+ cover(tctx,eimg,320,320,active.crop);
+ pctx.drawImage(tmp,0,0,320,320,0,0,640,640);
+}
+
+function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
 $('#preview320').onclick=renderAvatarPreview;
 async function openEditor(item){
  if(preset.value!=='profile'){alert('Selecciona Instagram · Perfil Plus para editar el encuadre circular.');return;}
