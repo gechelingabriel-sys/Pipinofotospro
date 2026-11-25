@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v6</title>
+<title>Pipino Pro v7</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -41,14 +41,14 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v6 · Perfil Close Crop + vista ampliada</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v7 · Perfil Close Crop + Spotify Perfil Nítido</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
 <p>Procesamiento local en el iPhone. Sin registro, sin servidor y sin franjas negras.</p>
 <label class="btn primary" for="picker">Seleccionar fotos</label>
 <input id="picker" type="file" accept="image/*,.heic,.heif" multiple>
-<div class="pills"><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Perfil Plus</span><span class="pill">Color automático</span></div>
+<div class="pills"><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Perfil Close Crop</span><span class="pill">Spotify Nítido</span><span class="pill">Color automático</span></div>
 </section>
 
 <section class="card">
@@ -57,13 +57,16 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
 <option value="profile">Instagram · Perfil Close Crop · 1080×1080</option>
+<option value="spotify">Spotify · Perfil Nítido · 640×640</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
 </select>
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice" id="profileNote">Para Instagram Perfil Close Crop, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La cara debe ocupar aproximadamente el 70–80% del círculo visible, con menos aire lateral y menos pecho/fondo, para mejorar la definición percibida cuando Instagram reduce el avatar. La referencia 320×320 es solo de comprobación, no se exporta como archivo final.</div><div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
+<div class="notice" id="profileNote">Para Instagram Perfil Close Crop, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La cara debe ocupar aproximadamente el 70–80% del círculo visible, con menos aire lateral y menos pecho/fondo, para mejorar la definición percibida cuando Instagram reduce el avatar. La referencia 320×320 es solo de comprobación, no se exporta como archivo final.</div>
+<div class="notice" id="spotifyNote" style="display:none">Para Spotify Perfil Nítido, Pipino exporta en 640×640 en sRGB y JPEG 96% con reducción progresiva y microenfoque calibrado para evitar que la compresión de Spotify deje la imagen borrosa. Usa el botón Encuadre para que la cara ocupe el 70–80% del círculo visible.</div>
+<div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
 <div id="p3Info" class="notice"></div>
 <div class="notice">Al exportar se crea un JPEG nuevo. Este proceso puede descartar EXIF y credenciales de procedencia, que esta versión no puede verificar. Conserva siempre el original. La aplicación no inventa datos de cámara.</div>
 </section>
@@ -85,8 +88,8 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 
 <div id="modal" class="modal">
 <div class="modal-card">
-<div class="top"><strong>Instagram Perfil Close Crop</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
-<div class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Para mejorar el perfil en Instagram, procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La salida final será 1080×1080. Esta herramienta está pensada para que la cara ocupe más área dentro del círculo, con menos fondo y menos torso. La referencia 320×320 sirve solo para comprobar cómo puede verse el avatar reducido.</div>
+<div class="top"><strong id="modalTitle">Instagram Perfil Close Crop</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
+<div id="modalHelp" class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La referencia 320×320 sirve solo para comprobar cómo se verá el avatar reducido.</div>
 <div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
 <div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
 <div style="margin-top:12px">
@@ -105,11 +108,12 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <script>
 const $ = selector => document.querySelector(selector);
 const PRESETS = Object.freeze({
-  iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, color:'p3', sharp:0, type:'archive'},
-  iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, color:'p3', sharp:0, type:'archive'},
-  profile:  {name:'Instagram · Perfil Plus', landscape:[1080,1080], portrait:[1080,1080], q:0.96, color:'srgb', sharp:0.075, type:'social'},
-  post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, color:'srgb', sharp:0.055, type:'social'},
-  story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, color:'srgb', sharp:0.04, type:'social'}
+  iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, color:'p3', sharp:0, type:'archive', label:'4:3'},
+  iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, color:'p3', sharp:0, type:'archive', label:'4:3'},
+  profile:  {name:'Instagram · Perfil Close Crop', landscape:[1080,1080], portrait:[1080,1080], q:0.96, color:'srgb', sharp:0.075, type:'social', circular:true, platform:'Instagram', label:'tamaño Instagram'},
+  spotify:  {name:'Spotify · Perfil Nítido', landscape:[640,640], portrait:[640,640], q:0.96, color:'srgb', sharp:0.085, type:'social', circular:true, platform:'Spotify', label:'tamaño Spotify'},
+  post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, color:'srgb', sharp:0.055, type:'social', platform:'Instagram', label:'tamaño Instagram'},
+  story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, color:'srgb', sharp:0.04, type:'social', platform:'Instagram', label:'tamaño Instagram'}
 });
 const picker=$('#picker'), preset=$('#preset'), filesEl=$('#files'), all=$('#all'), reportBtn=$('#report'), bar=$('#bar');
 let items=[], reports=[];
@@ -126,11 +130,12 @@ const P3=availableP3();
 function current(){return PRESETS[preset.value] || PRESETS.iphone24;}
 function info(){
  const p=current(),wh=p.landscape;
- $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.type==='archive'?'4:3':'tamaño Instagram'} · recorte completo sin franjas`;
- $('#colorInfo').textContent=p.color==='srgb'?'sRGB automático para Instagram.':(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
- $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y enfoque final discreto.':' · sin enfoque artificial.'}`;
+ $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.label} · recorte completo sin franjas`;
+ $('#colorInfo').textContent=p.color==='srgb'?`sRGB automático para ${p.platform||'redes sociales'}.`:(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
+ $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y microenfoque calibrado.':' · sin enfoque artificial.'}`;
  $('#p3Info').textContent=P3?'Display P3 disponible en el lienzo. El perfil final puede depender del navegador.':'Display P3 no verificado; se utilizará sRGB.';
  $('#profileNote').style.display=preset.value==='profile'?'block':'none';
+ $('#spotifyNote').style.display=preset.value==='spotify'?'block':'none';
  for(const it of items){ if(it.out){ it.status.textContent='Cambió el destino: vuelve a procesar esta foto.'; it.status.className='status warn'; it.save.disabled=true;it.dl.disabled=true;it.out=null;} }
 }
 preset.addEventListener('change',info);
@@ -169,24 +174,28 @@ function makeCanvas(w,h,color){
  return {canvas,ctx,chosen};
 }
 function renderSocial(image,w,h,crop){
- // Work in sRGB end to end and reduce in bounded steps. Maximum working canvas 2160px on longest side.
- const ratio=Math.min(2, Math.max(1,image.naturalWidth/w,image.naturalHeight/h));
- const scale=ratio>1.15?2:1;
- let cw=w*scale,ch=h*scale;
+ // Reducción progresiva en sRGB en pasos controlados (máx. 2560 px por lado) para conservar nitidez sin saturar memoria.
+ let cw=w, ch=h;
+ while(cw*2<=2560 && ch*2<=2560 && (image.naturalWidth>cw*1.35 || image.naturalHeight>ch*1.35)){
+   cw*=2; ch*=2;
+ }
  let {canvas,ctx}=makeCanvas(cw,ch,'srgb');
  drawCover(ctx,image,cw,ch,crop);
- if(scale===2){
-   const lower=makeCanvas(w,h,'srgb');
-   lower.ctx.imageSmoothingEnabled=true;lower.ctx.imageSmoothingQuality='high';
-   lower.ctx.drawImage(canvas,0,0,w,h);
-   canvas.width=0;canvas.height=0;canvas=lower.canvas;
+ while(cw>w || ch>h){
+   const nw=Math.max(w,Math.round(cw/2)), nh=Math.max(h,Math.round(ch/2));
+   const lower=makeCanvas(nw,nh,'srgb');
+   lower.ctx.imageSmoothingEnabled=true;
+   lower.ctx.imageSmoothingQuality='high';
+   lower.ctx.drawImage(canvas,0,0,nw,nh);
+   canvas.width=0;canvas.height=0;
+   canvas=lower.canvas; cw=nw; ch=nh;
  }
  return canvas;
 }
 function microSharpen(canvas,amount){
  if(!amount)return;
  const w=canvas.width,h=canvas.height;
- // Only operate on Instagram-sized images, never allocate full-size 48MP ImageData.
+ // Solo opera en tamaños sociales; nunca asigna ImageData de 48 MP.
  if(w*h>2500000)return;
  const ctx=canvas.getContext('2d',{colorSpace:'srgb',willReadFrequently:true});
  const frame=ctx.getImageData(0,0,w,h),src=frame.data;
@@ -204,7 +213,7 @@ function jpegBlob(canvas,q){return new Promise((resolve,reject)=>canvas.toBlob(b
  if(!blob || blob.size<100 || blob.type!=='image/jpeg')reject(new Error('El navegador no pudo crear un JPEG válido. Prueba un tamaño menor.'));
  else resolve(blob);
 },'image/jpeg',q));}
-// Validate dimensions in JPEG SOF markers without fully decoding a second 48MP image.
+// Valida dimensiones en los marcadores SOF del JPEG sin decodificar una segunda imagen de 48 MP.
 async function jpegDimensions(blob){
  const bytes=new Uint8Array(await blob.slice(0,Math.min(blob.size,512*1024)).arrayBuffer());
  if(bytes[0]!==0xff||bytes[1]!==0xd8)throw Error('La exportación no es un JPEG.');
@@ -226,7 +235,6 @@ async function jpegDimensions(blob){
 function filename(file,key){return `${file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')}_pipino_${key}.jpg`;}
 function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
 async function shareOrDownload(blob,name){
- // A website cannot write directly to the native iOS Photos library.
  const file=new File([blob],name,{type:'image/jpeg'});
  if(navigator.canShare?.({files:[file]})){
   try{await navigator.share({files:[file]});return;}
@@ -247,9 +255,8 @@ async function processItem(item){
   const portrait=image.naturalHeight>image.naturalWidth;
   const [w,h]=square?p.landscape:(portrait?p.portrait:p.landscape);
   const color=p.color==='p3'&&P3?'display-p3':'srgb';
-  const crop=key==='profile'?item.crop:null;
+  const crop=p.circular?item.crop:null;
   const sourcePixels=image.naturalWidth*image.naturalHeight;
-  const pixels=w*h;
   if(!sourcePixels)throw Error('Imagen original vacía.');
   let canvas,chosen=color;
   try{
@@ -293,7 +300,7 @@ function makeCard(file){
 function clearItems(){for(const it of items){if(it.outUrl)URL.revokeObjectURL(it.outUrl);}items=[];reports=[];filesEl.replaceChildren();}
 picker.onchange=()=>{clearItems();bar.style.width='0%';reportBtn.disabled=true;for(const file of picker.files){if(!file.type.startsWith('image/')&&!/\.(heic|heif)$/i.test(file.name))continue;const item=makeCard(file);items.push(item);filesEl.appendChild(item.el);}all.disabled=items.length===0;};
 all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i]);}catch{}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(resolve=>setTimeout(resolve,10));}all.disabled=false;};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v5',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v7',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
 const modal=$('#modal'), editCanvas=$('#editCanvas'), ectx=editCanvas.getContext('2d'), zoom=$('#zoom');
 let active=null,editable=null,dragging=false,lastX=0,lastY=0,originalCrop=null;
 function renderEditor(){
@@ -304,27 +311,32 @@ function renderEditor(){
 }
 
 function renderZoomPreview640(){
- if(!eimg||!active)return;
+ if(!editable||!active)return;
  const pCanvas=$('#zoomPreview640');
  const pctx=pCanvas.getContext('2d',{alpha:false});
  pctx.clearRect(0,0,640,640);
  pctx.imageSmoothingEnabled=true;
  pctx.imageSmoothingQuality='high';
- // Simulate enlarged viewing starting from a 320 avatar
+ // Simula la vista ampliada a partir de un avatar reducido de 320px
  const tmp=document.createElement('canvas');
  tmp.width=320; tmp.height=320;
  const tctx=tmp.getContext('2d',{alpha:false});
  tctx.imageSmoothingEnabled=true;
  tctx.imageSmoothingQuality='high';
- cover(tctx,eimg,320,320,active.crop);
+ drawCover(tctx,editable.image,320,320,active.crop);
  pctx.drawImage(tmp,0,0,320,320,0,0,640,640);
+ tmp.width=0; tmp.height=0;
 }
 
 function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
 $('#preview320').onclick=renderAvatarPreview;
 async function openEditor(item){
- if(preset.value!=='profile'){alert('Selecciona Instagram · Perfil Plus para editar el encuadre circular.');return;}
- closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;$('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
+ const p=current();
+ if(!p.circular){alert('Selecciona Instagram · Perfil Close Crop o Spotify · Perfil Nítido para editar el encuadre circular.');return;}
+ closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;
+ $('#modalTitle').textContent=p.name;
+ $('#modalHelp').textContent=`Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La salida final será ${p.landscape[0]}×${p.landscape[1]}. La referencia 320×320 sirve solo para comprobar cómo se verá el avatar reducido.`;
+ $('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
 }
 function closeEditor(){modal.classList.remove('show');if(editable?.url)URL.revokeObjectURL(editable.url);editable=null;active=null;originalCrop=null;dragging=false;}
 $('#close').onclick=()=>{if(active && originalCrop)active.crop={...originalCrop};closeEditor();};
@@ -337,6 +349,5 @@ editCanvas.addEventListener('pointerup',()=>dragging=false);
 editCanvas.addEventListener('pointercancel',()=>dragging=false);
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 info();
-
 </script>
 </body></html>
