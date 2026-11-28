@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v8</title>
+<title>Pipino Pro v9</title>
 <style>
 :root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--spotify:#1db954;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
@@ -49,7 +49,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v8 · Spotify HD (PNG 1080×1080) + Close Crop</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v9 · Spotify HD (1080 / 300×300) + Close Crop</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
@@ -65,6 +65,7 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
 <option value="spotify">Spotify · Perfil HD (PNG sin pérdida) · 1080×1080</option>
+<option value="spotify300">Spotify · Exacto 300×300 (PNG sin reescalado) · 300×300</option>
 <option value="profile">Instagram · Perfil Close Crop · 1080×1080</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
@@ -135,6 +136,7 @@ const PRESETS = Object.freeze({
   iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, format:'jpeg', color:'p3', sharp:0, type:'archive', circular:false},
   iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, format:'jpeg', color:'p3', sharp:0, type:'archive', circular:false},
   spotify:  {name:'Spotify · Perfil HD (PNG)', landscape:[1080,1080], portrait:[1080,1080], q:1, format:'png', color:'srgb', sharp:0.38, type:'social', circular:true},
+  spotify300: {name:'Spotify · Exacto 300×300 (PNG)', landscape:[300,300], portrait:[300,300], q:1, format:'png', color:'srgb', sharp:0.28, type:'social', circular:true},
   profile:  {name:'Instagram · Perfil Plus', landscape:[1080,1080], portrait:[1080,1080], q:0.96, format:'jpeg', color:'srgb', sharp:0.075, type:'social', circular:true},
   post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, format:'jpeg', color:'srgb', sharp:0.055, type:'social', circular:false},
   story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, format:'jpeg', color:'srgb', sharp:0.04, type:'social', circular:false}
@@ -168,9 +170,10 @@ const P3=availableP3();
 function current(){return PRESETS[preset.value] || PRESETS.iphone24;}
 function info(){
  const p=current(),key=preset.value,wh=p.landscape;
- $('#spotifySharpBox').style.display=key==='spotify'?'block':'none';
- $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.type==='archive'?'4:3':(key==='spotify'?'HD cuadrado para Spotify':'tamaño Instagram')} · recorte completo sin franjas`;
- $('#colorInfo').textContent=p.color==='srgb'?`sRGB automático para ${key==='spotify'?'Spotify':'Instagram'}.`:(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
+ const isSp=key==='spotify'||key==='spotify300';
+ $('#spotifySharpBox').style.display=isSp?'block':'none';
+ $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.type==='archive'?'4:3':(isSp?'cuadrado para Spotify':'tamaño Instagram')} · recorte completo sin franjas`;
+ $('#colorInfo').textContent=p.color==='srgb'?`sRGB automático para ${isSp?'Spotify':'Instagram'}.`:(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
  $('#qualityInfo').textContent=p.format==='png'
    ? `PNG sin pérdida (evita doble compresión en Spotify) · Unsharp Mask ${Math.round(spotifySharp*100)}%.`
    : `JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y enfoque final calibrado.':' · sin enfoque artificial.'}`;
@@ -179,7 +182,11 @@ function info(){
  if(key==='spotify'){
   note.style.display='block';
   note.className='notice sp';
-  note.textContent='Para evitar que Spotify deje la foto borrosa: 1) Exporta en PNG 1080×1080 sin compresión previa (así Spotify no recomprime sobre un JPEG). 2) Aplica Unsharp Mask de radio amplio que sobrevive al reescalado. 3) Muy importante: usá Encuadre con zoom hasta 5× para que tu cara y hombros llenen el círculo (sin mucho aire ni fondo).';
+  note.textContent='Exporta en PNG 1080×1080 sin compresión previa y Unsharp Mask de radio amplio. Muy importante: usá Encuadre con zoom hasta 5× para que tu cara y hombros llenen el círculo.';
+ } else if(key==='spotify300'){
+  note.style.display='block';
+  note.className='notice sp';
+  note.textContent='Modo Exacto 300×300 PNG: entrega la resolución exacta a la que Spotify guarda los avatares de usuario, evitando que la app móvil de Spotify reescale y suavice tu foto al subirla.';
  } else if(key==='profile'){
   note.style.display='block';
   note.className='notice';
@@ -361,6 +368,7 @@ async function processItem(item){
    if(p.type==='social')canvas=renderSocial(image,w,h,crop);
    else{const x=makeCanvas(w,h,color);canvas=x.canvas;chosen=x.chosen;drawCover(x.ctx,image,w,h,null);}
    if(key==='spotify')unsharpMask(canvas,spotifySharp);
+   else if(key==='spotify300')unsharpMask(canvas,spotifySharp*0.7);
    else if(p.type==='social')microSharpen(canvas,p.sharp);
    const output=await encodeBlob(canvas,p.format,p.q);
    const actual=p.format==='png'?await pngDimensions(output):await jpegDimensions(output);
@@ -399,7 +407,7 @@ function makeCard(file){
 function clearItems(){for(const it of items){if(it.outUrl)URL.revokeObjectURL(it.outUrl);}items=[];reports=[];filesEl.replaceChildren();}
 picker.onchange=()=>{clearItems();bar.style.width='0%';reportBtn.disabled=true;for(const file of picker.files){if(!file.type.startsWith('image/')&&!/\.(heic|heif)$/i.test(file.name))continue;const item=makeCard(file);items.push(item);filesEl.appendChild(item.el);}all.disabled=items.length===0;};
 all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i]);}catch{}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(resolve=>setTimeout(resolve,10));}all.disabled=false;};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v8',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v9',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
 const modal=$('#modal'), editCanvas=$('#editCanvas'), ectx=editCanvas.getContext('2d'), zoom=$('#zoom');
 let active=null,editable=null,dragging=false,lastX=0,lastY=0,originalCrop=null;
 function renderEditor(){
@@ -417,15 +425,15 @@ function renderZoomPreview640(){
  pctx.imageSmoothingEnabled=true;
  pctx.imageSmoothingQuality='high';
  drawCover(pctx,editable.image,640,640,active.crop);
- if(preset.value==='spotify')unsharpMask(pCanvas,spotifySharp*0.8);
+ if(preset.value==='spotify'||preset.value==='spotify300')unsharpMask(pCanvas,spotifySharp*0.8);
 }
 
-function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);if(preset.value==='spotify')unsharpMask(canvas,spotifySharp*0.65);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
+function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);if(preset.value==='spotify'||preset.value==='spotify300')unsharpMask(canvas,spotifySharp*0.65);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
 $('#preview320').onclick=renderAvatarPreview;
 async function openEditor(item){
  if(!current().circular){showToast('Selecciona Spotify · Perfil HD o Instagram · Perfil Close Crop para editar el encuadre circular.');return;}
  closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;$('#avatarPreviewWrap').style.display='none';
- $('#modalTitle').textContent=preset.value==='spotify'?'Spotify · Perfil HD (Close Crop)':'Instagram · Perfil Close Crop';
+ $('#modalTitle').textContent=preset.value==='spotify300'?'Spotify · Exacto 300×300 (Close Crop)':(preset.value==='spotify'?'Spotify · Perfil HD (Close Crop)':'Instagram · Perfil Close Crop');
  modal.classList.add('show');renderEditor();
 }
 function closeEditor(){modal.classList.remove('show');if(editable?.url)URL.revokeObjectURL(editable.url);editable=null;active=null;originalCrop=null;dragging=false;}
