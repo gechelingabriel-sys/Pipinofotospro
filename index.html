@@ -9,9 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="Pipino Pro">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Pipino Pro v7</title>
+<title>Pipino Pro v8</title>
 <style>
-:root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
+:root{color-scheme:dark;--bg:#090b0e;--card:#13171d;--card2:#0d1116;--text:#f5f7fa;--muted:#99a5b2;--line:#29313c;--accent:#4da3ff;--spotify:#1db954;--ok:#54d58a;--warn:#ffc45c;--bad:#ff7373}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif}
 .wrap{max-width:760px;margin:auto;padding:calc(env(safe-area-inset-top) + 18px) 12px calc(env(safe-area-inset-bottom) + 34px)}
 header{display:flex;gap:12px;align-items:center;margin-bottom:15px}.logo{width:46px;height:46px;border:1px solid var(--line);border-radius:14px;background:#151b22;display:grid;place-items:center;font-size:23px}
@@ -22,9 +22,11 @@ button,.btn{appearance:none;border:0;border-radius:14px;min-height:48px;padding:
 .primary{width:100%;background:var(--accent);color:#06111d}.secondary{background:#202731;color:var(--text);border:1px solid #323c49}.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
 button:disabled{opacity:.42}input[type=file]{display:none}
 .pills{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}.pill{font-size:12px;padding:7px 9px;border-radius:999px;background:#0d1116;border:1px solid var(--line);color:#cbd4de}
+.pill.sp{border-color:rgba(29,185,84,.45);color:#7be49e}
 .title{font-size:15px;margin:0 0 11px}select{width:100%;height:49px;border:1px solid var(--line);border-radius:13px;background:#0d1116;color:var(--text);font:inherit;padding:0 12px}
 .setting{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-top:10px}.setting strong{font-size:13px;display:block}.setting span{font-size:12px;line-height:1.45;color:var(--muted);display:block;margin-top:3px}
 .notice{font-size:12px;line-height:1.48;padding:10px 11px;border-radius:12px;background:#101820;border:1px solid #26384d;color:#c7d4e3;margin-top:10px}
+.notice.sp{background:#0e1b14;border-color:#204d32;color:#c4ebd2}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px}.files{display:grid;gap:10px;margin-top:12px}
 .file{display:grid;grid-template-columns:72px 1fr;gap:11px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:15px;background:var(--card2)}
 .thumb{width:72px;height:72px;border-radius:11px;object-fit:cover;background:#05070a}.fname{font-size:14px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta,.small{font-size:12px;line-height:1.45;color:var(--muted);margin-top:4px}.status{font-size:12px;margin-top:4px}.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
@@ -37,18 +39,24 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 #editCanvas{display:block;width:100%;height:100%}.circle{position:absolute;inset:5%;border:2px solid rgba(255,255,255,.94);border-radius:50%;box-shadow:0 0 0 999px rgba(0,0,0,.18);pointer-events:none}.safe{position:absolute;inset:15%;border:1px dashed rgba(77,163,255,.95);border-radius:50%;pointer-events:none}
 .zoomrow{display:grid;grid-template-columns:42px 1fr 50px;gap:8px;align-items:center;font-size:12px;color:var(--muted)}input[type=range]{width:100%;accent-color:var(--accent)}
 .modalbuttons{display:flex;gap:8px;margin-top:13px}.modalbuttons button{flex:1}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);z-index:80;max-width:min(92vw,420px);background:#19212c;color:#f5f7fa;border:1px solid #324052;border-radius:14px;padding:11px 15px;font-size:13px;line-height:1.4;box-shadow:0 12px 30px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.seg button{min-height:38px;font-size:12px;border-radius:10px;background:#141a22;color:var(--muted);border:1px solid var(--line)}
+.seg button.active{background:#122b1c;color:#7be49e;border-color:rgba(29,185,84,.6)}
+.previews{display:flex;gap:14px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v7 · Perfil Close Crop + Spotify Perfil Nítido</div></div></header>
+<header><div class="logo">📷</div><div><h1>Pipino Pro</h1><div class="sub">v8 · Spotify HD (PNG 1080×1080) + Close Crop</div></div></header>
 
 <section class="card hero">
 <h2>Selecciona tus fotos</h2>
 <p>Procesamiento local en el iPhone. Sin registro, sin servidor y sin franjas negras.</p>
 <label class="btn primary" for="picker">Seleccionar fotos</label>
 <input id="picker" type="file" accept="image/*,.heic,.heif" multiple>
-<div class="pills"><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Perfil Close Crop</span><span class="pill">Spotify Nítido</span><span class="pill">Color automático</span></div>
+<div class="pills"><span class="pill">24 MP</span><span class="pill">48 MP</span><span class="pill">Perfil Plus</span><span class="pill sp">Spotify HD · PNG</span><span class="pill">Color automático</span></div>
 </section>
 
 <section class="card">
@@ -56,19 +64,27 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 <select id="preset" aria-label="Seleccionar destino">
 <option value="iphone24" selected>iPhone 17 Pro · 24 MP · 5712×4284</option>
 <option value="iphone48">iPhone 17 Pro · 48 MP · 8064×6048</option>
+<option value="spotify">Spotify · Perfil HD (PNG sin pérdida) · 1080×1080</option>
 <option value="profile">Instagram · Perfil Close Crop · 1080×1080</option>
-<option value="spotify">Spotify · Perfil Nítido · 640×640</option>
 <option value="post">Instagram · Post vertical · 1080×1350</option>
 <option value="story">Instagram · Story / Reel · 1080×1920</option>
 </select>
+<div id="spotifySharpBox" class="setting" style="display:none">
+  <strong>Nitidez para avatar de Spotify (Unsharp Mask)</strong>
+  <span>Compensa el reescalado de Spotify para que ojos, pelo y bordes se vean definidos.</span>
+  <div class="seg" role="group" aria-label="Nivel de nitidez Spotify">
+    <button type="button" data-sharp="0.22">Natural</button>
+    <button type="button" data-sharp="0.38" class="active">Alta (rec.)</button>
+    <button type="button" data-sharp="0.54">Máxima</button>
+  </div>
+</div>
 <div class="setting"><strong>Resolución y encuadre</strong><span id="resInfo"></span></div>
 <div class="setting"><strong>Color automático</strong><span id="colorInfo"></span></div>
 <div class="setting"><strong>Calidad automática</strong><span id="qualityInfo"></span></div>
-<div class="notice" id="profileNote">Para Instagram Perfil Close Crop, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La cara debe ocupar aproximadamente el 70–80% del círculo visible, con menos aire lateral y menos pecho/fondo, para mejorar la definición percibida cuando Instagram reduce el avatar. La referencia 320×320 es solo de comprobación, no se exporta como archivo final.</div>
-<div class="notice" id="spotifyNote" style="display:none">Para Spotify Perfil Nítido, Pipino exporta en 640×640 en sRGB y JPEG 96% con reducción progresiva y microenfoque calibrado para evitar que la compresión de Spotify deje la imagen borrosa. Usa el botón Encuadre para que la cara ocupe el 70–80% del círculo visible.</div>
+<div class="notice" id="profileNote"></div>
 <div class="notice">La imagen ocupa siempre el encuadre mediante recorte proporcional. <strong>No se agregan bandas negras.</strong> Si la foto original es pequeña, aumentar los megapíxeles no recupera detalle.</div>
 <div id="p3Info" class="notice"></div>
-<div class="notice">Al exportar se crea un JPEG nuevo. Este proceso puede descartar EXIF y credenciales de procedencia, que esta versión no puede verificar. Conserva siempre el original. La aplicación no inventa datos de cámara.</div>
+<div class="notice">Al exportar se crea una imagen nueva. Este proceso puede descartar EXIF y credenciales de procedencia, que esta versión no puede verificar. Conserva siempre el original. La aplicación no inventa datos de cámara.</div>
 </section>
 
 <section class="card">
@@ -88,35 +104,57 @@ footer{font-size:11px;line-height:1.5;color:var(--muted);padding:4px 2px}
 
 <div id="modal" class="modal">
 <div class="modal-card">
-<div class="top"><strong id="modalTitle">Instagram Perfil Close Crop</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
-<div id="modalHelp" class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La referencia 320×320 sirve solo para comprobar cómo se verá el avatar reducido.</div>
+<div class="top"><strong id="modalTitle">Perfil Close Crop</strong><button id="close" class="ghost" style="min-height:38px">Cerrar</button></div>
+<div id="modalDesc" class="small">Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Procura que la cabeza y hombros llenen el círculo (sin demasiado cielo o torso) para que no pierda definición al reducirse.</div>
 <div id="editor" class="editor"><canvas id="editCanvas" width="370" height="370"></canvas><div class="circle"></div><div class="safe"></div></div>
-<div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="3" step=".01" value="1"><span id="zv">1.00×</span></div>
+<div class="zoomrow"><span>Zoom</span><input id="zoom" type="range" min="1" max="5" step=".01" value="1"><span id="zv">1.00×</span></div>
 <div style="margin-top:12px">
   <button id="preview320" class="ghost" style="width:100%">Vista previa 320×320</button>
   <div id="avatarPreviewWrap" style="display:none;margin-top:10px;text-align:center">
-    <canvas id="avatarPreview" width="320" height="320" style="width:160px;height:160px;border-radius:50%;border:1px solid #29313c"></canvas>
-    <div class="small">Referencia visual del avatar reducido. No se descarga.</div>
-    <canvas id="zoomPreview640" width="640" height="640" style="display:block;width:160px;height:160px;border-radius:50%;border:1px solid #29313c;margin:10px auto 0"></canvas>
-    <div class="small">Simulación ampliada del avatar reducido. Sirve solo como orientación visual.</div>
+    <div class="previews">
+      <div>
+        <canvas id="avatarPreview" width="320" height="320" style="width:112px;height:112px;border-radius:50%;border:1px solid #29313c"></canvas>
+        <div class="small">Tamaño Spotify</div>
+      </div>
+      <div>
+        <canvas id="zoomPreview640" width="640" height="640" style="width:152px;height:152px;border-radius:50%;border:1px solid #29313c"></canvas>
+        <div class="small">Detalle ampliado</div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="modalbuttons"><button id="reset" class="secondary">Centrar</button><button id="use" class="primary">Usar encuadre</button></div>
 </div>
 </div>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <script>
 const $ = selector => document.querySelector(selector);
 const PRESETS = Object.freeze({
-  iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, color:'p3', sharp:0, type:'archive', label:'4:3'},
-  iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, color:'p3', sharp:0, type:'archive', label:'4:3'},
-  profile:  {name:'Instagram · Perfil Close Crop', landscape:[1080,1080], portrait:[1080,1080], q:0.96, color:'srgb', sharp:0.075, type:'social', circular:true, platform:'Instagram', label:'tamaño Instagram'},
-  spotify:  {name:'Spotify · Perfil Nítido', landscape:[640,640], portrait:[640,640], q:0.96, color:'srgb', sharp:0.085, type:'social', circular:true, platform:'Spotify', label:'tamaño Spotify'},
-  post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, color:'srgb', sharp:0.055, type:'social', platform:'Instagram', label:'tamaño Instagram'},
-  story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, color:'srgb', sharp:0.04, type:'social', platform:'Instagram', label:'tamaño Instagram'}
+  iphone24: {name:'iPhone 17 Pro · 24 MP', landscape:[5712,4284], portrait:[4284,5712], q:0.97, format:'jpeg', color:'p3', sharp:0, type:'archive', circular:false},
+  iphone48: {name:'iPhone 17 Pro · 48 MP', landscape:[8064,6048], portrait:[6048,8064], q:0.97, format:'jpeg', color:'p3', sharp:0, type:'archive', circular:false},
+  spotify:  {name:'Spotify · Perfil HD (PNG)', landscape:[1080,1080], portrait:[1080,1080], q:1, format:'png', color:'srgb', sharp:0.38, type:'social', circular:true},
+  profile:  {name:'Instagram · Perfil Plus', landscape:[1080,1080], portrait:[1080,1080], q:0.96, format:'jpeg', color:'srgb', sharp:0.075, type:'social', circular:true},
+  post:     {name:'Instagram · Post vertical', landscape:[1080,1350], portrait:[1080,1350], q:0.95, format:'jpeg', color:'srgb', sharp:0.055, type:'social', circular:false},
+  story:    {name:'Instagram · Story / Reel', landscape:[1080,1920], portrait:[1080,1920], q:0.95, format:'jpeg', color:'srgb', sharp:0.04, type:'social', circular:false}
 });
-const picker=$('#picker'), preset=$('#preset'), filesEl=$('#files'), all=$('#all'), reportBtn=$('#report'), bar=$('#bar');
-let items=[], reports=[];
+const picker=$('#picker'), preset=$('#preset'), filesEl=$('#files'), all=$('#all'), reportBtn=$('#report'), bar=$('#bar'), toastEl=$('#toast');
+let items=[], reports=[], toastTimer=null, spotifySharp=0.38;
+document.querySelectorAll('#spotifySharpBox .seg button').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#spotifySharpBox .seg button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    spotifySharp=Number(btn.dataset.sharp)||0.38;
+    info();
+  };
+});
+function showToast(msg){
+  toastEl.textContent=msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toastEl.classList.remove('show'),3600);
+}
 function availableP3(){
  try {
   const c=document.createElement('canvas');
@@ -129,14 +167,27 @@ function availableP3(){
 const P3=availableP3();
 function current(){return PRESETS[preset.value] || PRESETS.iphone24;}
 function info(){
- const p=current(),wh=p.landscape;
- $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.label} · recorte completo sin franjas`;
- $('#colorInfo').textContent=p.color==='srgb'?`sRGB automático para ${p.platform||'redes sociales'}.`:(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
- $('#qualityInfo').textContent=`JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y microenfoque calibrado.':' · sin enfoque artificial.'}`;
+ const p=current(),key=preset.value,wh=p.landscape;
+ $('#spotifySharpBox').style.display=key==='spotify'?'block':'none';
+ $('#resInfo').textContent=`${wh[0]}×${wh[1]} · ${p.type==='archive'?'4:3':(key==='spotify'?'HD cuadrado para Spotify':'tamaño Instagram')} · recorte completo sin franjas`;
+ $('#colorInfo').textContent=p.color==='srgb'?`sRGB automático para ${key==='spotify'?'Spotify':'Instagram'}.`:(P3?'Display P3 disponible, elegido automáticamente.':'sRGB automático: Display P3 no confirmado.');
+ $('#qualityInfo').textContent=p.format==='png'
+   ? `PNG sin pérdida (evita doble compresión en Spotify) · Unsharp Mask ${Math.round(spotifySharp*100)}%.`
+   : `JPEG ${Math.round(p.q*100)} %${p.sharp?' · reducción progresiva y enfoque final calibrado.':' · sin enfoque artificial.'}`;
  $('#p3Info').textContent=P3?'Display P3 disponible en el lienzo. El perfil final puede depender del navegador.':'Display P3 no verificado; se utilizará sRGB.';
- $('#profileNote').style.display=preset.value==='profile'?'block':'none';
- $('#spotifyNote').style.display=preset.value==='spotify'?'block':'none';
- for(const it of items){ if(it.out){ it.status.textContent='Cambió el destino: vuelve a procesar esta foto.'; it.status.className='status warn'; it.save.disabled=true;it.dl.disabled=true;it.out=null;} }
+ const note=$('#profileNote');
+ if(key==='spotify'){
+  note.style.display='block';
+  note.className='notice sp';
+  note.textContent='Para evitar que Spotify deje la foto borrosa: 1) Exporta en PNG 1080×1080 sin compresión previa (así Spotify no recomprime sobre un JPEG). 2) Aplica Unsharp Mask de radio amplio que sobrevive al reescalado. 3) Muy importante: usá Encuadre con zoom hasta 5× para que tu cara y hombros llenen el círculo (sin mucho aire ni fondo).';
+ } else if(key==='profile'){
+  note.style.display='block';
+  note.className='notice';
+  note.textContent='Para Instagram Perfil Close Crop, Pipino exporta 1080×1080 en sRGB y JPEG 96%. La cara debe ocupar aproximadamente el 70–80% del círculo visible, con menos aire lateral y menos pecho/fondo, para mejorar la definición percibida cuando Instagram reduce el avatar.';
+ } else {
+  note.style.display='none';
+ }
+ for(const it of items){ if(it.out){ it.status.textContent='Cambió el destino o nitidez: vuelve a procesar esta foto.'; it.status.className='status warn'; it.save.disabled=true;it.dl.disabled=true;it.out=null;} }
 }
 preset.addEventListener('change',info);
 function fmt(n){const u=['B','KB','MB','GB'];let i=0,v=n;while(v>=1024&&i<u.length-1){v/=1024;i++}return `${v.toFixed(i?2:0)} ${u[i]}`;}
@@ -174,28 +225,26 @@ function makeCanvas(w,h,color){
  return {canvas,ctx,chosen};
 }
 function renderSocial(image,w,h,crop){
- // Reducción progresiva en sRGB en pasos controlados (máx. 2560 px por lado) para conservar nitidez sin saturar memoria.
- let cw=w, ch=h;
- while(cw*2<=2560 && ch*2<=2560 && (image.naturalWidth>cw*1.35 || image.naturalHeight>ch*1.35)){
-   cw*=2; ch*=2;
- }
+ const ratio=Math.max(1,image.naturalWidth/w,image.naturalHeight/h);
+ let scale=1;
+ if(ratio>2.8 && Math.max(w,h)*4<=4320)scale=4;
+ else if(ratio>1.15 && Math.max(w,h)*2<=2560)scale=2;
+ let cw=w*scale,ch=h*scale;
  let {canvas,ctx}=makeCanvas(cw,ch,'srgb');
  drawCover(ctx,image,cw,ch,crop);
- while(cw>w || ch>h){
-   const nw=Math.max(w,Math.round(cw/2)), nh=Math.max(h,Math.round(ch/2));
+ while(scale>1){
+   scale=Math.max(1,Math.floor(scale/2));
+   const nw=w*scale,nh=h*scale;
    const lower=makeCanvas(nw,nh,'srgb');
-   lower.ctx.imageSmoothingEnabled=true;
-   lower.ctx.imageSmoothingQuality='high';
+   lower.ctx.imageSmoothingEnabled=true;lower.ctx.imageSmoothingQuality='high';
    lower.ctx.drawImage(canvas,0,0,nw,nh);
-   canvas.width=0;canvas.height=0;
-   canvas=lower.canvas; cw=nw; ch=nh;
+   canvas.width=0;canvas.height=0;canvas=lower.canvas;
  }
  return canvas;
 }
 function microSharpen(canvas,amount){
  if(!amount)return;
  const w=canvas.width,h=canvas.height;
- // Solo opera en tamaños sociales; nunca asigna ImageData de 48 MP.
  if(w*h>2500000)return;
  const ctx=canvas.getContext('2d',{colorSpace:'srgb',willReadFrequently:true});
  const frame=ctx.getImageData(0,0,w,h),src=frame.data;
@@ -209,11 +258,51 @@ function microSharpen(canvas,amount){
  }
  frame.data.set(copy);ctx.putImageData(frame,0,0);
 }
-function jpegBlob(canvas,q){return new Promise((resolve,reject)=>canvas.toBlob(blob=>{
- if(!blob || blob.size<100 || blob.type!=='image/jpeg')reject(new Error('El navegador no pudo crear un JPEG válido. Prueba un tamaño menor.'));
- else resolve(blob);
-},'image/jpeg',q));}
-// Valida dimensiones en los marcadores SOF del JPEG sin decodificar una segunda imagen de 48 MP.
+// Separable 5x5 Gaussian Unsharp Mask: survives Spotify avatar downscaling cleanly without harsh halos.
+function unsharpMask(canvas,amount){
+ if(!amount)return;
+ const w=canvas.width,h=canvas.height;
+ if(w*h>2500000)return;
+ const ctx=canvas.getContext('2d',{colorSpace:'srgb',willReadFrequently:true});
+ const frame=ctx.getImageData(0,0,w,h),src=frame.data;
+ const tmp=new Float32Array(w*h*3);
+ const blur=new Float32Array(w*h*3);
+ const k=[1,4,6,4,1];
+ for(let y=0;y<h;y++){
+  for(let x=0;x<w;x++){
+   let r=0,g=0,b=0;
+   for(let d=-2;d<=2;d++){
+    const sx=clamp(x+d,0,w-1),idx=(y*w+sx)*4,wt=k[d+2];
+    r+=src[idx]*wt;g+=src[idx+1]*wt;b+=src[idx+2]*wt;
+   }
+   const o=(y*w+x)*3;tmp[o]=r/16;tmp[o+1]=g/16;tmp[o+2]=b/16;
+  }
+ }
+ for(let y=0;y<h;y++){
+  for(let x=0;x<w;x++){
+   let r=0,g=0,b=0;
+   for(let d=-2;d<=2;d++){
+    const sy=clamp(y+d,0,h-1),idx=(sy*w+x)*3,wt=k[d+2];
+    r+=tmp[idx]*wt;g+=tmp[idx+1]*wt;b+=tmp[idx+2]*wt;
+   }
+   const o=(y*w+x)*3;blur[o]=r/16;blur[o+1]=g/16;blur[o+2]=b/16;
+  }
+ }
+ for(let i=0,p=0;i<src.length;i+=4,p+=3){
+  for(let c=0;c<3;c++){
+   const diff=src[i+c]-blur[p+c];
+   src[i+c]=clamp(Math.round(src[i+c]+amount*diff),0,255);
+  }
+ }
+ ctx.putImageData(frame,0,0);
+}
+function encodeBlob(canvas,format,q){
+ const mime=format==='png'?'image/png':'image/jpeg';
+ return new Promise((resolve,reject)=>canvas.toBlob(blob=>{
+  if(!blob || blob.size<100 || blob.type!==mime)reject(new Error(`El navegador no pudo crear un ${format.toUpperCase()} válido.`));
+  else resolve(blob);
+ },mime,format==='png'?undefined:q));
+}
 async function jpegDimensions(blob){
  const bytes=new Uint8Array(await blob.slice(0,Math.min(blob.size,512*1024)).arrayBuffer());
  if(bytes[0]!==0xff||bytes[1]!==0xd8)throw Error('La exportación no es un JPEG.');
@@ -232,16 +321,25 @@ async function jpegDimensions(blob){
  }
  throw Error('No se pudieron comprobar las dimensiones del JPEG.');
 }
-function filename(file,key){return `${file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')}_pipino_${key}.jpg`;}
+async function pngDimensions(blob){
+ const bytes=new Uint8Array(await blob.slice(0,32).arrayBuffer());
+ if(bytes[0]!==0x89||bytes[1]!==0x50||bytes[2]!==0x4e||bytes[3]!==0x47)throw Error('La exportación no es un PNG.');
+ const view=new DataView(bytes.buffer);
+ return {width:view.getUint32(16),height:view.getUint32(20)};
+}
+function filename(file,key,format){
+ const ext=format==='png'?'png':'jpg';
+ return `${file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9_-]/g,'_')}_pipino_${key}.${ext}`;
+}
 function download(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
-async function shareOrDownload(blob,name){
- const file=new File([blob],name,{type:'image/jpeg'});
+async function shareOrDownload(blob,name,mime){
+ const file=new File([blob],name,{type:mime});
  if(navigator.canShare?.({files:[file]})){
   try{await navigator.share({files:[file]});return;}
   catch(error){if(error?.name==='AbortError')return;}
  }
  download(blob,name);
- alert('Archivo descargado. Para guardarlo en Fotos, ábrelo y utiliza Compartir → Guardar imagen.');
+ showToast('Archivo descargado. Para guardarlo en Fotos, ábrelo y usa Compartir → Guardar imagen.');
 }
 async function processItem(item){
  item.status.textContent='Procesando…';item.status.className='status warn';
@@ -262,19 +360,20 @@ async function processItem(item){
   try{
    if(p.type==='social')canvas=renderSocial(image,w,h,crop);
    else{const x=makeCanvas(w,h,color);canvas=x.canvas;chosen=x.chosen;drawCover(x.ctx,image,w,h,null);}
-   if(p.type==='social')microSharpen(canvas,p.sharp);
-   const output=await jpegBlob(canvas,p.q);
-   const actual=await jpegDimensions(output);
+   if(key==='spotify')unsharpMask(canvas,spotifySharp);
+   else if(p.type==='social')microSharpen(canvas,p.sharp);
+   const output=await encodeBlob(canvas,p.format,p.q);
+   const actual=p.format==='png'?await pngDimensions(output):await jpegDimensions(output);
    if(actual.width!==w||actual.height!==h)throw Error(`Dimensiones inesperadas: ${actual.width}×${actual.height}.`);
-   const name=filename(item.file,key);
+   const name=filename(item.file,key,p.format);
    const oldUrl=item.outUrl;if(oldUrl)URL.revokeObjectURL(oldUrl);
-   item.out=output;item.outUrl=URL.createObjectURL(output);item.name=name;
+   item.out=output;item.outUrl=URL.createObjectURL(output);item.name=name;item.mime=output.type;
    item.save.disabled=false;item.dl.disabled=false;
    const upscale=image.naturalWidth<w||image.naturalHeight<h;
-   item.meta.textContent=`${image.naturalWidth}×${image.naturalHeight} · ${fmt(item.file.size)} → ${w}×${h} · ${fmt(output.size)}`;
-   item.status.textContent=`Listo · ${chosen==='display-p3'?'Display P3':'sRGB'} · verificado${upscale?' · ampliado sin detalle adicional':''}`;
+   item.meta.textContent=`${image.naturalWidth}×${image.naturalHeight} · ${fmt(item.file.size)} → ${w}×${h} ${p.format.toUpperCase()} · ${fmt(output.size)}`;
+   item.status.textContent=`Listo · ${chosen==='display-p3'?'Display P3':'sRGB'} · ${p.format.toUpperCase()} verificado${upscale?' · ampliado sin detalle adicional':''}`;
    item.status.className=upscale?'status warn':'status ok';
-   const report={input_name:item.file.name,input_bytes:item.file.size,input_dimensions:[image.naturalWidth,image.naturalHeight],sha256_before:await digest(item.file),output_name:name,output_bytes:output.size,output_dimensions:[w,h],sha256_after:await digest(output),preset:p.name,format:'JPEG',jpeg_quality:Math.round(p.q*100),color_space_requested:chosen,icc_profile_verified:false,crop_mode:'cover-no-bars',upscaled:upscale,metadata_reencoded:true,c2pa_status:'not_checked',camera_metadata_added:false,validation_status:'jpeg_dimensions_verified',notes:upscale?'No se crea detalle nuevo al aumentar dimensiones.':null};
+   const report={input_name:item.file.name,input_bytes:item.file.size,input_dimensions:[image.naturalWidth,image.naturalHeight],sha256_before:await digest(item.file),output_name:name,output_bytes:output.size,output_dimensions:[w,h],sha256_after:await digest(output),preset:p.name,format:p.format.toUpperCase(),jpeg_quality:p.format==='png'?100:Math.round(p.q*100),color_space_requested:chosen,icc_profile_verified:false,crop_mode:'cover-no-bars',upscaled:upscale,metadata_reencoded:true,c2pa_status:'not_checked',camera_metadata_added:false,validation_status:`${p.format}_dimensions_verified`,notes:upscale?'No se crea detalle nuevo al aumentar dimensiones.':null};
    const n=reports.findIndex(r=>r.input_name===item.file.name);
    if(n<0)reports.push(report); else reports[n]=report;
    reportBtn.disabled=false;
@@ -288,19 +387,19 @@ async function processItem(item){
 function makeCard(file){
  const el=document.createElement('div');el.className='file';
  el.innerHTML=`<img class="thumb" alt="Miniatura"><div><div class="fname"></div><div class="meta"></div><div class="status"></div><div class="actions"><button class="secondary edit">Encuadre</button><button class="secondary run">Procesar</button><button class="primary save" disabled>Compartir / Guardar en Fotos</button><button class="ghost dl" disabled>Descargar</button></div></div>`;
- const item={file,el,thumb:el.querySelector('.thumb'),fname:el.querySelector('.fname'),meta:el.querySelector('.meta'),status:el.querySelector('.status'),save:el.querySelector('.save'),dl:el.querySelector('.dl'),crop:{zoom:1,x:0,y:0},out:null,name:null,outUrl:null};
+ const item={file,el,thumb:el.querySelector('.thumb'),fname:el.querySelector('.fname'),meta:el.querySelector('.meta'),status:el.querySelector('.status'),save:el.querySelector('.save'),dl:el.querySelector('.dl'),crop:{zoom:1,x:0,y:0},out:null,name:null,mime:'image/jpeg',outUrl:null};
  item.fname.textContent=file.name;item.meta.textContent=`${file.type||'imagen'} · ${fmt(file.size)}`;
  const url=URL.createObjectURL(file);item.thumb.src=url;item.thumb.onload=()=>URL.revokeObjectURL(url);item.thumb.onerror=()=>URL.revokeObjectURL(url);
  el.querySelector('.run').onclick=()=>processItem(item).catch(()=>{});
- el.querySelector('.edit').onclick=()=>openEditor(item).catch(e=>alert(e.message));
- item.save.onclick=()=>item.out&&shareOrDownload(item.out,item.name);
+ el.querySelector('.edit').onclick=()=>openEditor(item).catch(e=>showToast(e.message));
+ item.save.onclick=()=>item.out&&shareOrDownload(item.out,item.name,item.mime);
  item.dl.onclick=()=>item.out&&download(item.out,item.name);
  return item;
 }
 function clearItems(){for(const it of items){if(it.outUrl)URL.revokeObjectURL(it.outUrl);}items=[];reports=[];filesEl.replaceChildren();}
 picker.onchange=()=>{clearItems();bar.style.width='0%';reportBtn.disabled=true;for(const file of picker.files){if(!file.type.startsWith('image/')&&!/\.(heic|heif)$/i.test(file.name))continue;const item=makeCard(file);items.push(item);filesEl.appendChild(item.el);}all.disabled=items.length===0;};
 all.onclick=async()=>{all.disabled=true;for(let i=0;i<items.length;i++){try{await processItem(items[i]);}catch{}bar.style.width=`${Math.round((i+1)/items.length*100)}%`;await new Promise(resolve=>setTimeout(resolve,10));}all.disabled=false;};
-reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v7',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
+reportBtn.onclick=()=>download(new Blob([JSON.stringify({app:'Pipino Pro v8',generated_at:new Date().toISOString(),reports},null,2)],{type:'application/json'}),'pipino_pro_report.json');
 const modal=$('#modal'), editCanvas=$('#editCanvas'), ectx=editCanvas.getContext('2d'), zoom=$('#zoom');
 let active=null,editable=null,dragging=false,lastX=0,lastY=0,originalCrop=null;
 function renderEditor(){
@@ -311,32 +410,23 @@ function renderEditor(){
 }
 
 function renderZoomPreview640(){
- if(!editable||!active)return;
+ if(!editable?.image||!active)return;
  const pCanvas=$('#zoomPreview640');
  const pctx=pCanvas.getContext('2d',{alpha:false});
  pctx.clearRect(0,0,640,640);
  pctx.imageSmoothingEnabled=true;
  pctx.imageSmoothingQuality='high';
- // Simula la vista ampliada a partir de un avatar reducido de 320px
- const tmp=document.createElement('canvas');
- tmp.width=320; tmp.height=320;
- const tctx=tmp.getContext('2d',{alpha:false});
- tctx.imageSmoothingEnabled=true;
- tctx.imageSmoothingQuality='high';
- drawCover(tctx,editable.image,320,320,active.crop);
- pctx.drawImage(tmp,0,0,320,320,0,0,640,640);
- tmp.width=0; tmp.height=0;
+ drawCover(pctx,editable.image,640,640,active.crop);
+ if(preset.value==='spotify')unsharpMask(pCanvas,spotifySharp*0.8);
 }
 
-function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
+function renderAvatarPreview(){if(!active||!editable)return;const canvas=$('#avatarPreview');const ctx=canvas.getContext('2d');ctx.clearRect(0,0,320,320);drawCover(ctx,editable.image,320,320,active.crop);if(preset.value==='spotify')unsharpMask(canvas,spotifySharp*0.65);$('#avatarPreviewWrap').style.display='block';renderZoomPreview640();}
 $('#preview320').onclick=renderAvatarPreview;
 async function openEditor(item){
- const p=current();
- if(!p.circular){alert('Selecciona Instagram · Perfil Close Crop o Spotify · Perfil Nítido para editar el encuadre circular.');return;}
- closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;
- $('#modalTitle').textContent=p.name;
- $('#modalHelp').textContent=`Arrastra con el dedo para posicionar la foto. El círculo blanco muestra el recorte del avatar; el azul es la zona segura recomendada para la cara. Procura que los ojos queden un poco por encima del centro y que la cabeza ocupe la mayor parte del círculo. La salida final será ${p.landscape[0]}×${p.landscape[1]}. La referencia 320×320 sirve solo para comprobar cómo se verá el avatar reducido.`;
- $('#avatarPreviewWrap').style.display='none';modal.classList.add('show');renderEditor();
+ if(!current().circular){showToast('Selecciona Spotify · Perfil HD o Instagram · Perfil Close Crop para editar el encuadre circular.');return;}
+ closeEditor();active=item;originalCrop={...item.crop};editable=await decode(item.file);zoom.value=active.crop.zoom;$('#avatarPreviewWrap').style.display='none';
+ $('#modalTitle').textContent=preset.value==='spotify'?'Spotify · Perfil HD (Close Crop)':'Instagram · Perfil Close Crop';
+ modal.classList.add('show');renderEditor();
 }
 function closeEditor(){modal.classList.remove('show');if(editable?.url)URL.revokeObjectURL(editable.url);editable=null;active=null;originalCrop=null;dragging=false;}
 $('#close').onclick=()=>{if(active && originalCrop)active.crop={...originalCrop};closeEditor();};
